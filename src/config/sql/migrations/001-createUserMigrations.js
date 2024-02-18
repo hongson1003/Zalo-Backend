@@ -20,7 +20,8 @@ module.exports = {
       },
       phoneNumber: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       avatar: {
         type: Sequelize.STRING,

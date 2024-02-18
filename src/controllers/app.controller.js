@@ -15,8 +15,10 @@ const register = async (req, res, next) => {
     }
     try {
         const response = await appService.register(user);
-        res.cookie('access_token', response.data.access_token, { httpOnly: true, maxAge: 60 * 1000 * 10 });
-        res.cookie('refresh_token', response.data.refresh_token, { httpOnly: true, maxAge: 60 * 1000 * 10 });
+        if (response.errCode === 0) {
+            res.cookie('access_token', response.data.access_token, { httpOnly: true, maxAge: 60 * 1000 * 10 });
+            res.cookie('refresh_token', response.data.refresh_token, { httpOnly: true, maxAge: 60 * 1000 * 10 });
+        }
         return res.status(200).json(response);
     } catch (error) {
         next(error);

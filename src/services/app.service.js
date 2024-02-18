@@ -9,6 +9,18 @@ const expiresIn = process.env.EXPIRESIN
 
 const register = async ({ userName, phoneNumber, password: plainPassword }) => {
     try {
+        // check user exists;
+        let userExists = await db.User.findOne({
+            where: {
+                phoneNumber
+            }
+        })
+        if (userExists)
+            return {
+                errCode: 4,
+                message: 'User is exists, Please use new another phone'
+            }
+        //create new user;
         let refresh_token = uuidv4();
         let password = hashPassword(plainPassword);
         const user = await db.User.create({

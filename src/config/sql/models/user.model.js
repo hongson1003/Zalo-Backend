@@ -34,8 +34,15 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     userName: DataTypes.STRING,
-    phoneNumber: DataTypes.STRING,
-    password: DataTypes.STRING,
+    phoneNumber: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     avatar: DataTypes.STRING,
     verificationCode: DataTypes.STRING,
     verificationCodeExpiry: DataTypes.DATE,
