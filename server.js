@@ -2,7 +2,6 @@ import colors from 'colors';
 import app from './app';
 require('dotenv').config();
 
-
 app.set('port', process.env.PORT || 7777);
 
 

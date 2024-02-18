@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     verificationCode: DataTypes.STRING,
     verificationCodeExpiry: DataTypes.DATE,
     isVerify: DataTypes.BOOLEAN,
+    refresh_token: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   }, {

@@ -39,6 +39,10 @@ module.exports = {
         allowNull: true,
         defaultValue: 0,
       },
+      refresh_token: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       status: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
