@@ -12,10 +12,11 @@ const checkPassword = (myPlaintextPassword, hashedPassword) => {
 }
 
 const standardUser = (user) => {
-    for (let key in user)
+    let myUser = { ...user };
+    for (let key in myUser)
         if (!rejectKeyUserRegister.includes(key))
-            delete user[key];
-    return user;
+            delete myUser[key];
+    return myUser;
 }
 
 

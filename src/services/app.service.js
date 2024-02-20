@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 require('dotenv').config();
 const secret = process.env.SECRET
-const expiresIn = process.env.EXPIRESIN
+const expiresIn = process.env.EXPIRESD_IN
 
 const register = async ({ userName, phoneNumber, password: plainPassword }) => {
     try {
@@ -30,15 +30,10 @@ const register = async ({ userName, phoneNumber, password: plainPassword }) => {
         });
         if (user) {
             let userAfterCustomize = customizeUser.standardUser(user.dataValues);
-            const token = handleJwt.signJwt(userAfterCustomize, secret, expiresIn);
             return {
                 errCode: 0,
                 message: 'Created',
-                data: {
-                    access_token: token,
-                    refresh_token: refresh_token,
-                    user: userAfterCustomize
-                }
+                data: userAfterCustomize
             }
         }
         else {
@@ -52,84 +47,58 @@ const register = async ({ userName, phoneNumber, password: plainPassword }) => {
     }
 }
 
-const verifyUser = async (id, code) => {
+const verifyUser = async (id, phoneNumber) => {
     try {
-        let rs = await db.User.update({ isVerify: code }, {
+        const userRaw = await db.User.findOne({
             where: {
-                id: id
+                id: id,
+                phoneNumber: phoneNumber,
             },
+            raw: false,
         })
-        if (rs && rs[0] == 1) {
+        let user = customizeUser.standardUser(userRaw?.dataValues);
+        if (Object.keys(user).length !== 0) {
+            let access_token = handleJwt.signJwt(user, secret, expiresIn);
+            let refresh_token = uuidv4();
+            userRaw.refresh_token = refresh_token;
+            await userRaw.save();
             return {
                 errCode: 0,
-                message: 'Verify code success',
+                message: 'Verify user success',
+                data: {
+                    user,
+                    access_token: access_token,
+                    refresh_token: refresh_token
+                }
             }
         }
         return {
-            errCode: 2,
-            message: 'Fail, do not update code',
+            errCode: 1,
+            message: 'Verify fail, Please check your code !'
         }
+
     } catch (error) {
         throw error;
     }
 }
 
-const verificationCode = async (id, otp) => {
-    try {
-        let date = new Date();
-        date.setHours(date.getHours())
-        date.setMinutes(date.getMinutes() + 1);
-
-        let rs = await db.User.update({
-            verificationCode: otp,
-            verificationCodeExpiry: date
-        }, {
-            where: {
-                id: id
-            },
-        })
-        if (rs && rs[0] == 1) {
-            return {
-                errCode: 0,
-                message: 'Update verificationCode success',
-            }
-        }
-        return {
-            errCode: 2,
-            message: 'Fail, do not update vericationCode',
-        }
-    } catch (error) {
-        throw error;
-    }
-}
 
 const login = async (phoneNumber, password) => {
     try {
-        let userRaw = await db.User.findOne({
+        let userDB = await db.User.findOne({
             where: {
                 phoneNumber: phoneNumber
             },
-            raw: false
         })
-        const user = userRaw?.dataValues;
+        const user = customizeUser.standardUser(userDB);
         if (user) {
             // validate user;
-            let checkPassword = customizeUser.checkPassword(password, user.password);
+            let checkPassword = customizeUser.checkPassword(password, userDB.password);
             if (checkPassword) {
-                // set cookie
-                const refresh_token = uuidv4();
-                const userClient = customizeUser.standardUser(user);
-                const token = handleJwt.signJwt(user, secret, expiresIn);
-                userRaw.refresh_token = refresh_token;
-                await userRaw.save();
                 return {
                     errCode: 0,
-                    message: 'Login success',
-                    data: {
-                        user: userClient,
-                        refresh_token: refresh_token,
-                        access_token: token,
-                    }
+                    message: '',
+                    data: user
                 }
             }
             return {
@@ -156,11 +125,11 @@ const updateToken = async (refresh_token_old) => {
             },
             raw: false,
         })
-        const user = userRaw.dataValues;
+        const user = userRaw?.dataValues;
         if (user) {
             const refresh_token = uuidv4();
             const userClient = customizeUser.standardUser(user);
-            const token = handleJwt.signJwt(user, secret, expiresIn);
+            const token = handleJwt.signJwt(userClient, secret, expiresIn);
             userRaw.refresh_token = refresh_token;
             await userRaw.save();
             return {
@@ -187,7 +156,6 @@ const updateToken = async (refresh_token_old) => {
 module.exports = {
     register,
     verifyUser,
-    verificationCode,
     login,
     updateToken
 }

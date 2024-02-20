@@ -27,19 +27,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      verificationCode: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      verificationCodeExpiry: {
-        type: Sequelize.DATE,
-        allowNull: true
-      },
-      isVerify: {
-        type: Sequelize.BOOLEAN,
-        allowNull: true,
-        defaultValue: 0,
-      },
       refresh_token: {
         type: Sequelize.STRING,
         allowNull: true,

@@ -7,14 +7,15 @@ const InitRoutesAuthentication = (router) => {
     router.route('/login')
         .post(appController.login)
 
+    router.route('/logout')
+        .post(appController.logout)
+
     router.route('/check')
         .post(appController.check)
 
     router.route('/verify')
-        .put(appController.verifyUser)
+        .post(appController.verifyUser)
 
-    router.route('/code/verificationcode')
-        .put(appController.verificationCode)
     return router;
 }
 
