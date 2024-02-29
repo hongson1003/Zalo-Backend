@@ -15,6 +15,8 @@ const InitRoutesAuthentication = (router) => {
 
     router.route('/verify')
         .post(appController.verifyUser)
+    router.route('/reset-password')
+        .post(appController.resetPassword)
 
     return router;
 }

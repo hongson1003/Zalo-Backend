@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 const saltRounds = 10;
-const rejectKeyUserRegister = ['id', 'phoneNumber', 'userName', 'avatar']
+const keyUserRegister = ['id', 'phoneNumber', 'userName', 'avatar'];
+const keyProfile = ['birthdate', 'gender', 'soundTrack', 'coverImage', 'description'];
 
 const hashPassword = (myPlaintextPassword) => {
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -14,21 +15,24 @@ const checkPassword = (myPlaintextPassword, hashedPassword) => {
 const standardUser = (user) => {
     let myUser = { ...user };
     for (let key in myUser)
-        if (!rejectKeyUserRegister.includes(key))
+        if (!keyUserRegister.includes(key))
             delete myUser[key];
     return myUser;
 }
 
-
-
-
-
-
+const standardProfile = (profile) => {
+    let myProfile = { ...profile };
+    for (let key in myProfile)
+        if (!keyProfile.includes(key))
+            delete myProfile[key];
+    return myProfile;
+}
 
 
 
 module.exports = {
     standardUser,
     hashPassword,
-    checkPassword
+    checkPassword,
+    standardProfile
 }

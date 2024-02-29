@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here 
-      User.hasOne(models.ProfileContact)
+      User.hasOne(models.ProfileContact, { as: 'userInfo', })
       User.belongsToMany(models.User, {
         as: 'friends',
         through: 'FriendShip',

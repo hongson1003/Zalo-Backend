@@ -90,14 +90,14 @@ const login = async (phoneNumber, password) => {
                 phoneNumber: phoneNumber
             },
         })
-        const user = customizeUser.standardUser(userDB);
-        if (user) {
+        if (userDB) {
+            const user = customizeUser.standardUser(userDB);
             // validate user;
             let checkPassword = customizeUser.checkPassword(password, userDB.password);
             if (checkPassword) {
                 return {
                     errCode: 0,
-                    message: '',
+                    message: 'Need verify user !',
                     data: user
                 }
             }
@@ -153,9 +153,40 @@ const updateToken = async (refresh_token_old) => {
     }
 }
 
+const updatePassword = async (id, phoneNumber, password) => {
+    try {
+        let userDB = await db.User.findOne({
+            where: {
+                phoneNumber: phoneNumber,
+                id: id
+            },
+            raw: false,
+        })
+        if (userDB) {
+            userDB.password = hashPassword(password);
+            await userDB.save();
+            const user = customizeUser.standardUser(userDB.dataValues);
+            return {
+                errCode: 0,
+                message: 'Update password success',
+                user: user
+            }
+        } else {
+            return {
+                errCode: 2,
+                message: 'Fail, First, please register account',
+            }
+        }
+
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     register,
     verifyUser,
     login,
-    updateToken
+    updateToken,
+    updatePassword
 }

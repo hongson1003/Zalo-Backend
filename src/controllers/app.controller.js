@@ -107,10 +107,27 @@ const logout = async (req, res, next) => {
     }
 }
 
+const resetPassword = async (req, res, next) => {
+    try {
+        const { id, phoneNumber, newPassword } = req.body;
+        if (!newPassword || !phoneNumber || !id)
+            return res.status(200).json({
+                errCode: 1,
+                message: "Missing parameter",
+            })
+        let rs = await appService.updatePassword(id, phoneNumber, newPassword);
+        return res.status(200).json(rs);
+    } catch (error) {
+        next(error);
+    }
+}
+
+
 module.exports = {
     register,
     verifyUser,
     login,
     check,
-    logout
+    logout,
+    resetPassword
 }
