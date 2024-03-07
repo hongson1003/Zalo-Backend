@@ -40,10 +40,132 @@ const getProfileByUserId = async (req, res, next) => {
     next();
 }
 
+const findUserWithProfileById = async (req, res, next) => {
+    const response = await userService.getUserWithProfileById(req.query.phoneNumber);
+    if (response)
+        return res.status(200).json(response);
+    next();
+}
+
+const sendRequestAddFriend = async (req, res, next) => {
+    const { userId } = req.body;
+    const user = req.user;
+    if (!user.id || !userId) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.sendRequestAddFriend(user.id, userId);
+    if (response)
+        return res.status(200).json(response);
+    next();
+}
+
+const findFriendShip = async (req, res, next) => {
+    const { userId } = req.query;
+    const user = req.user;
+    if (!user?.id || !userId) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.findFriendShip(user?.id, userId);
+    if (response)
+        return res.status(200).json(response);
+    next();
+}
+
+const acceptRequestAddFriend = async (req, res, next) => {
+    const { userId } = req.body;
+    const user = req.user;
+    if (!userId) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.acceptRequestAddFriend(userId, user.id);
+    if (response)
+        return res.status(200).json(response);
+    next();
+}
+
+const rejectFriendShip = async (req, res, next) => {
+    const { userId } = req.body;
+    const user = req.user;
+    if (!userId) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.rejectFriendShip(user.id, userId);
+    if (response)
+        return res.status(200).json(response);
+    next();
+}
+
+const unFriend = async (req, res, next) => {
+    const { userId } = req.body;
+    const user = req.user;
+    if (!userId) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.unFriend(user.id, userId);
+    if (response)
+        return res.status(200).json(response);
+    next();
+}
+
+const findAllNotifications = async (req, res, next) => {
+    const user = req.user;
+    if (!user?.id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.findAllNotifications(user.id);
+    if (response)
+        return res.status(200).json(response);
+    next();
+};
+
+const updateNotification = async (req, res, next) => {
+    try {
+        const ids = req.body.ids;
+        if (!ids) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.updateReadStatusNofificationFriend(ids);
+        return res.status(200).json(response);
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
 module.exports = {
     findAllUsers,
     findUserById,
     findUserByPhone,
     createInfoContact,
-    getProfileByUserId
+    getProfileByUserId,
+    findUserWithProfileById,
+    sendRequestAddFriend,
+    findFriendShip,
+    acceptRequestAddFriend,
+    rejectFriendShip,
+    unFriend,
+    findAllNotifications,
+    updateNotification
 }

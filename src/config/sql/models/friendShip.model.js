@@ -11,6 +11,17 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            FriendShip.belongsTo(models.User, {
+                foreignKey: 'user1Id',
+                as: 'user1'
+            });
+
+            FriendShip.belongsTo(models.User, {
+                foreignKey: 'user2Id',
+                as: 'user2'
+            });
+
+            
 
         }
     }
@@ -25,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false,
         },
-        status: DataTypes.BOOLEAN,
+        status: DataTypes.STRING,
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
     }, {

@@ -11,16 +11,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here 
-      User.hasOne(models.ProfileContact, { as: 'userInfo', })
+      User.hasOne(models.ProfileContact, { as: 'userInfo', foreignKey: 'userId' })
+
       User.belongsToMany(models.User, {
         as: 'friends',
         through: 'FriendShip',
         foreignKey: 'user1Id', // Khóa ngoại của user trong bảng FriendShip
         otherKey: 'user2Id' // Khóa ngoại của user đích trong bảng FriendShip
       });
+
+
+
+
       User.hasMany(models.Post, {
         foreignKey: 'userId'
       });
+
       User.hasMany(models.Comment, {
         foreignKey: 'userId'
       });

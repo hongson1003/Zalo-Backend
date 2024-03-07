@@ -19,7 +19,7 @@ const io = require("socket.io")(server, {
 
 io.on('connection', function (socket) {
   socket.on('setup', (data) => {
-    // socket.join(data);
+    socket.join(data?.id || data);
     socket.emit('connected', socket.id);
   })
   socket.on('join-qr-room', function (room) {
@@ -30,6 +30,14 @@ io.on('connection', function (socket) {
   socket.on('scan-success', function (data) {
     socket.in(data.room).emit('need-to-verify', data);
   });
+
+  socket.on("disconnect", (reason) => {
+    // else the socket will automatically try to reconnect
+  });
+
+  socket.on('send-add-friend', (data) => {
+    socket.in(data?.id).emit('need-accept-addFriend', data);
+  })
 
 
 

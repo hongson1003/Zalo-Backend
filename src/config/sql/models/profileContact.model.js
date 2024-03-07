@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            ProfileContact.belongsTo(models.User, { foreignKey: 'userId' });
+            ProfileContact.belongsTo(models.User, { foreignKey: 'userId', });
         }
     }
     ProfileContact.init({
@@ -19,14 +19,21 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
-            autoIncrement: true
+            autoIncrement: true,
         },
         birthdate: DataTypes.DATE,
         gender: DataTypes.BOOLEAN,
         soundTrack: DataTypes.STRING,
         coverImage: DataTypes.STRING,
         description: DataTypes.STRING,
-        userId: DataTypes.INTEGER,
+        userId: {
+            type: DataTypes.INTEGER,
+            unique: true,
+            references: {
+                model: 'User',
+                key: 'id'
+            }
+        },
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
     }, {
