@@ -20,6 +20,18 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'receiverId',
                 as: 'receiver'
             })
+
+            // friendShip
+            NotificationFriendShip.belongsTo(models.FriendShip, {
+                foreignKey: 'senderId',
+                targetKey: 'user1Id'
+            });
+
+            NotificationFriendShip.belongsTo(models.FriendShip, {
+                foreignKey: 'receiverId',
+                targetKey: 'user2Id'
+            });
+
         }
     }
     NotificationFriendShip.init({

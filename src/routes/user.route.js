@@ -26,11 +26,15 @@ const IntRoutesUsers = (router) => {
     router.route('/friendShip/unfriend')
         .put(userMiddleware.checkJWT, userController.unFriend)
 
+    router.route('/friends')
+        .get(userMiddleware.checkJWT, userController.findFriendsPagination)
+
     router.route('/notifications/friendShip')
         .get(userMiddleware.checkJWT, userController.findAllNotifications)
         .post(userMiddleware.checkJWT, userController.updateNotification)
 
-
+    router.route('/notifications/friendShip/noread')
+        .get(userMiddleware.checkJWT, userController.findAllNotificationsNotRead)
 
     return router;
 }

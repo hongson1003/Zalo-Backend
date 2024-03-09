@@ -1,5 +1,5 @@
 'use strict';
-const statusFriendShip = require("../../../ultils/types").statusFriendShip;
+const STATUS_FRIENDSHIP = require("../../../ultils/types").STATUS_FRIENDSHIP;
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {

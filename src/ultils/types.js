@@ -1,10 +1,17 @@
-const statusFriendShip = {
+const STATUS_FRIENDSHIP = {
     PENDING: 'PENDING',
     RESOLVE: 'RESOLVE',
     REJECT: 'REJECT',
     OLD_FRIEND: 'OLD_FRIEND'
 }
 
+const STATUS_CHAT = {
+    PRIVATE_CHAT: 'PRIVATE_CHAT',
+    GROUP_CHAT: 'GROUP_CHAT'
+}
+
+
 module.exports = {
-    statusFriendShip
+    STATUS_FRIENDSHIP,
+    STATUS_CHAT
 }

@@ -48,7 +48,7 @@ const findUserWithProfileById = async (req, res, next) => {
 }
 
 const sendRequestAddFriend = async (req, res, next) => {
-    const { userId } = req.body;
+    const { userId, content } = req.body;
     const user = req.user;
     if (!user.id || !userId) {
         return res.status(200).json({
@@ -56,7 +56,7 @@ const sendRequestAddFriend = async (req, res, next) => {
             message: 'Missing required parameter'
         })
     }
-    let response = await userService.sendRequestAddFriend(user.id, userId);
+    let response = await userService.sendRequestAddFriend(user.id, userId, content);
     if (response)
         return res.status(200).json(response);
     next();
@@ -136,6 +136,20 @@ const findAllNotifications = async (req, res, next) => {
     next();
 };
 
+const findAllNotificationsNotRead = async (req, res, next) => {
+    const user = req.user;
+    if (!user?.id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.findAllNotificationsNotRead(user.id);
+    if (response)
+        return res.status(200).json(response);
+    next();
+};
+
 const updateNotification = async (req, res, next) => {
     try {
         const ids = req.body.ids;
@@ -152,6 +166,24 @@ const updateNotification = async (req, res, next) => {
     }
 };
 
+const findFriendsPagination = async (req, res, next) => {
+    try {
+        const { page, limit } = req.query;
+        const userId = req.user.id;
+        if (!userId || !page || !limit) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.findFriendsPagination(userId, page, limit);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
 
 
 module.exports = {
@@ -167,5 +199,7 @@ module.exports = {
     rejectFriendShip,
     unFriend,
     findAllNotifications,
-    updateNotification
+    findAllNotificationsNotRead,
+    updateNotification,
+    findFriendsPagination
 }

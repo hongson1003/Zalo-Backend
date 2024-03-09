@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
-import db from '../config/sql/models/index.model';
+import db, { sequelize } from '../config/sql/models/index.model';
 import customizeUser from '../ultils/customizeUser';
-import { statusFriendShip } from '../ultils/types';
+import { STATUS_FRIENDSHIP } from '../ultils/types';
 const getAllUsers = async () => {
     const attributes = ['id', 'userName', 'phoneNumber', 'avatar'];
     try {
@@ -129,7 +129,7 @@ const getUserWithProfileById = async (phoneNumber) => {
 
 }
 
-const sendRequestAddFriend = async (user1Id, user2Id) => {
+const sendRequestAddFriend = async (user1Id, user2Id, content) => {
     try {
         user1Id = parseInt(user1Id);
         user2Id = parseInt(user2Id);
@@ -152,20 +152,20 @@ const sendRequestAddFriend = async (user1Id, user2Id) => {
             const friendShip = await db.FriendShip.create({
                 user1Id,
                 user2Id,
-                status: statusFriendShip.PENDING
+                status: STATUS_FRIENDSHIP.PENDING
             });
-            await createNofiticationFriendShip(user1Id, user2Id);
+            await createNofiticationFriendShip(user1Id, user2Id, content);
             return {
                 errCode: 0,
                 message: 'Send request success',
                 data: friendShip
             }
-        } else if (friendShipOne.status !== statusFriendShip.RESOLVE && friendShipOne.status !== statusFriendShip.PENDING) {
-            friendShipOne.status = statusFriendShip.PENDING;
+        } else if (friendShipOne.status !== STATUS_FRIENDSHIP.RESOLVE && friendShipOne.status !== STATUS_FRIENDSHIP.PENDING) {
+            friendShipOne.status = STATUS_FRIENDSHIP.PENDING;
             friendShipOne.user1Id = user1Id;
             friendShipOne.user2Id = user2Id;
             await friendShipOne.save();
-            await createNofiticationFriendShip(user1Id, user2Id);
+            await createNofiticationFriendShip(user1Id, user2Id, content);
             return {
                 errCode: 0,
                 message: 'Send request success',
@@ -240,9 +240,9 @@ const acceptRequestAddFriend = async (user1Id, user2Id) => {
             },
             raw: false,
         });
-        if (friendShipDB && friendShipDB.status === statusFriendShip.PENDING) {
-            friendShipDB.status = statusFriendShip.RESOLVE;
-            friendShipDB.save();
+        if (friendShipDB && friendShipDB.status === STATUS_FRIENDSHIP.PENDING) {
+            friendShipDB.status = STATUS_FRIENDSHIP.RESOLVE;
+            await friendShipDB.save();
             return {
                 errCode: 0,
                 message: 'Accept success',
@@ -266,8 +266,8 @@ const rejectFriendShip = async (user1Id, user2Id) => {
             },
             raw: false,
         });
-        if (friendShipDB && friendShipDB.status === statusFriendShip.PENDING) {
-            friendShipDB.status = statusFriendShip.REJECT;
+        if (friendShipDB && friendShipDB.status === STATUS_FRIENDSHIP.PENDING) {
+            friendShipDB.status = STATUS_FRIENDSHIP.REJECT;
             friendShipDB.save();
             return {
                 errCode: 0,
@@ -294,8 +294,8 @@ const unFriend = async (user1Id, user2Id) => {
             },
             raw: false,
         });
-        if (friendShipDB && friendShipDB.status === statusFriendShip.RESOLVE) {
-            friendShipDB.status = statusFriendShip.OLD_FRIEND;
+        if (friendShipDB && friendShipDB.status === STATUS_FRIENDSHIP.RESOLVE) {
+            friendShipDB.status = STATUS_FRIENDSHIP.OLD_FRIEND;
             friendShipDB.save();
             return {
                 errCode: 0,
@@ -311,11 +311,12 @@ const unFriend = async (user1Id, user2Id) => {
     }
 }
 
-const createNofiticationFriendShip = async (senderId, receiverId) => {
+const createNofiticationFriendShip = async (senderId, receiverId, content) => {
     try {
         const notification = await db.NotificationFriendShip.create({
             senderId,
             receiverId,
+            content,
             status: false,
         });
         return {
@@ -328,7 +329,53 @@ const createNofiticationFriendShip = async (senderId, receiverId) => {
     }
 }
 
-const findAllNotifications = async (userId) => {
+const findAllNotifications = async (userId, readStatus) => {
+    const notifications = await db.NotificationFriendShip.findAll({
+        where: {
+            receiverId: userId,
+        },
+        include: [
+            {
+                model: db.User,
+                as: 'sender',
+                attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+            },
+            {
+                model: db.User,
+                as: 'receiver',
+                attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+            },
+            {
+                model: db.FriendShip,
+                as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
+                foreignKey: 'senderId',
+                targetKey: 'user1Id',
+                where: {
+                    user1Id: { [Op.col]: 'NotificationFriendShip.senderId' },
+                    user2Id: userId,
+                    status: STATUS_FRIENDSHIP.PENDING
+                }
+            },
+        ],
+        nest: true,
+        raw: true
+    });
+
+    if (notifications)
+        return {
+            errCode: 0,
+            message: 'Find all notification success',
+            data: notifications
+        }
+    else
+        return {
+            errCode: 1,
+            message: 'Not found',
+            data: []
+        }
+}
+
+const findAllNotificationsNotRead = async (userId) => {
     const notifications = await db.NotificationFriendShip.findAll({
         where: {
             receiverId: userId,
@@ -345,11 +392,22 @@ const findAllNotifications = async (userId) => {
                 as: 'receiver',
                 attributes: ['id', 'userName', 'phoneNumber', 'avatar']
             },
+            {
+                model: db.FriendShip,
+                as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
+                foreignKey: 'senderId',
+                targetKey: 'user1Id',
+                where: {
+                    user1Id: { [Op.col]: 'NotificationFriendShip.senderId' },
+                    user2Id: userId,
+                    status: STATUS_FRIENDSHIP.PENDING
+                }
+            },
         ],
         nest: true,
         raw: true
-
     });
+
     if (notifications)
         return {
             errCode: 0,
@@ -373,8 +431,9 @@ const updateReadStatusNofificationFriend = async (ids) => {
             {
                 where: {
                     id: {
-                        [Op.in]: ids   // this will update all the records 
-                    }                           // with an id from the list
+                        [Op.in]: ids,
+                    },
+                    status: false
                 }
             }
         )
@@ -394,6 +453,60 @@ const updateReadStatusNofificationFriend = async (ids) => {
         throw new Error(error);
     }
 }
+
+const findFriendsPagination = async (userId, page, limit) => {
+    try {
+        limit *= 1;
+        const offset = (page - 1) * limit;
+        const friends = await db.FriendShip.findAll({
+            where: {
+                [Op.or]: [
+                    {
+                        user1Id: userId,
+                        status: STATUS_FRIENDSHIP.RESOLVE
+                    },
+                    {
+                        user2Id: userId,
+                        status: STATUS_FRIENDSHIP.RESOLVE
+                    }
+                ]
+            },
+            attributes: ['user1Id', 'user2Id'],
+            include: [
+                {
+                    model: db.User,
+                    as: 'user1',
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                },
+                {
+                    model: db.User,
+                    as: 'user2',
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                }
+            ],
+            nest: true,
+            raw: true,
+            order: [
+                // [db.User, 'userName', 'ASC']
+            ],
+            offset,
+            limit
+        });
+        if (friends)
+            return {
+                errCode: 0,
+                message: 'Find success',
+                data: friends
+            }
+        return {
+            errCode: 1,
+            message: 'Not found',
+            data: []
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 module.exports = {
     getAllUsers,
     getUserById,
@@ -408,5 +521,7 @@ module.exports = {
     unFriend,
     createNofiticationFriendShip,
     findAllNotifications,
-    updateReadStatusNofificationFriend
+    findAllNotificationsNotRead,
+    updateReadStatusNofificationFriend,
+    findFriendsPagination
 }

@@ -9,18 +9,28 @@ const MessageModel = Schema({
         ref: 'Chat'
     },
     senderId: {
-        type: Schema.Types.ObjectId,
+        type: Number,
         ref: 'User',
         require: true,
     },
     content: String,
     videos: [{
         type: String,
+        require: false,
+        default: null
+
     }],
     images: [{
-        type: String
+        type: String,
+        require: false,
+        default: null
+
     }],
-    sticker: String,
+    sticker: {
+        type: String,
+        require: false,
+        default: null
+    },
     status: Boolean
 }, {
     timestamps: true,

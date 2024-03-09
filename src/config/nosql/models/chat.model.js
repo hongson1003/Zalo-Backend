@@ -10,14 +10,14 @@ const ChatModel = Schema({
         enum: ['GROUP_CHAT', 'PRIVATE_CHAT'],
     },
     participants: [{
-        type: Schema.Types.ObjectId,
+        type: Number,
         ref: 'User'
     }],
     groupPhoto: String,
     lastedMessage: {
         type: {
             users: [{
-                type: Schema.Types.ObjectId,
+                type: Number,
                 ref: 'User',
                 require: true
             }],
@@ -26,11 +26,13 @@ const ChatModel = Schema({
                 require: true,
                 ref: "Message"
             }
-        }
+        },
+        require: false
     },
     pinnedMessages: {
         type: Schema.Types.ObjectId,
-        ref: "Message"
+        ref: "Message",
+        require: false
     },
     status: Boolean,
 }, {
