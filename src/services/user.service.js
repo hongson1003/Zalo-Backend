@@ -507,6 +507,27 @@ const findFriendsPagination = async (userId, page, limit) => {
         throw new Error(error);
     }
 }
+
+const getMany = async (ids) => {
+    const attributes = ['id', 'userName', 'phoneNumber', 'avatar'];
+    try {
+        const users = await db.User.findAll({
+            where: {
+                id: {
+                    [Op.in]: ids
+                }
+            },
+            attributes: attributes,
+        });
+        return {
+            errCode: 0,
+            message: 'Find all users',
+            data: users
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 module.exports = {
     getAllUsers,
     getUserById,
@@ -523,5 +544,6 @@ module.exports = {
     findAllNotifications,
     findAllNotificationsNotRead,
     updateReadStatusNofificationFriend,
-    findFriendsPagination
+    findFriendsPagination,
+    getMany
 }

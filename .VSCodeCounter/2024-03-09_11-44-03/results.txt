@@ -1,0 +1,91 @@
+Date : 2024-03-09 11:44:03
+Directory : d:\CongNgheMoi\Zalo_Express_Backend
+Total : 43 files,  12732 codes, 85 comments, 224 blanks, all 13041 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |          2 |     10,403 |          0 |          2 |     10,405 |
+| JavaScript |         37 |      2,282 |         77 |        211 |      2,570 |
+| HTML       |          1 |         26 |          0 |          3 |         29 |
+| Properties |          1 |         12 |          8 |          3 |         23 |
+| Markdown   |          1 |          9 |          0 |          4 |         13 |
+| CSS        |          1 |          0 |          0 |          1 |          1 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                               | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                  |         43 |     12,732 |         85 |        224 |     13,041 |
+| . (Files)                                                                                          |          6 |     10,494 |         20 |         47 |     10,561 |
+| public                                                                                             |          1 |          0 |          0 |          1 |          1 |
+| public\dist                                                                                        |          1 |          0 |          0 |          1 |          1 |
+| src                                                                                                |         35 |      2,212 |         65 |        173 |      2,450 |
+| src\config                                                                                         |         20 |        739 |         48 |         45 |        832 |
+| src\config\nosql                                                                                   |          5 |        133 |          5 |         19 |        157 |
+| src\config\nosql (Files)                                                                           |          1 |         16 |          5 |          5 |         26 |
+| src\config\nosql\models                                                                            |          4 |        117 |          0 |         14 |        131 |
+| src\config\sql                                                                                     |         15 |        606 |         43 |         26 |        675 |
+| src\config\sql (Files)                                                                             |          1 |         12 |          0 |          4 |         16 |
+| src\config\sql\config                                                                              |          1 |         35 |          0 |          3 |         38 |
+| src\config\sql\migrations                                                                          |          6 |        273 |          6 |          1 |        280 |
+| src\config\sql\models                                                                              |          7 |        286 |         37 |         18 |        341 |
+| src\controllers                                                                                    |          3 |        421 |          2 |         39 |        462 |
+| src\middleware                                                                                     |          2 |         56 |          9 |         10 |         75 |
+| src\routes                                                                                         |          4 |         79 |          0 |         26 |        105 |
+| src\services                                                                                       |          3 |        838 |          6 |         38 |        882 |
+| src\ultils                                                                                         |          3 |         79 |          0 |         15 |         94 |
+| views                                                                                              |          1 |         26 |          0 |          3 |         29 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                           | language   | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| d:\CongNgheMoi\Zalo_Express_Backend\.env                                                           | Properties |         12 |          8 |          3 |         23 |
+| d:\CongNgheMoi\Zalo_Express_Backend\README.md                                                      | Markdown   |          9 |          0 |          4 |         13 |
+| d:\CongNgheMoi\Zalo_Express_Backend\app.js                                                         | JavaScript |         40 |          9 |         18 |         67 |
+| d:\CongNgheMoi\Zalo_Express_Backend\package-lock.json                                              | JSON       |     10,351 |          0 |          1 |     10,352 |
+| d:\CongNgheMoi\Zalo_Express_Backend\package.json                                                   | JSON       |         52 |          0 |          1 |         53 |
+| d:\CongNgheMoi\Zalo_Express_Backend\public\dist\style.css                                          | CSS        |          0 |          0 |          1 |          1 |
+| d:\CongNgheMoi\Zalo_Express_Backend\server.js                                                      | JavaScript |         30 |          3 |         20 |         53 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\nosql\config.js                                     | JavaScript |         16 |          5 |          5 |         26 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\nosql\models\chat.history.js                        | JavaScript |         21 |          0 |          3 |         24 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\nosql\models\chat.model.js                          | JavaScript |         42 |          0 |          3 |         45 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\nosql\models\message.model.js                       | JavaScript |         37 |          0 |          5 |         42 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\nosql\models\story.model.js                         | JavaScript |         17 |          0 |          3 |         20 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\config\config.js                                | JavaScript |         35 |          0 |          3 |         38 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\connectMySql.js                                 | JavaScript |         12 |          0 |          4 |         16 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\migrations\001-createUserMigrations.js          | JavaScript |         48 |          1 |          1 |         50 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\migrations\002-createProfileContactMigration.js | JavaScript |         50 |          1 |          0 |         51 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\migrations\003-createFriendShipMigrations.js    | JavaScript |         40 |          1 |          0 |         41 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\migrations\004-createPostMigrations.js          | JavaScript |         44 |          1 |          0 |         45 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\migrations\005-createCommentMigrations.js       | JavaScript |         42 |          1 |          0 |         43 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\migrations\006-createNotificationFriendShip.js  | JavaScript |         49 |          1 |          0 |         50 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\models\comment.model.js                         | JavaScript |         29 |          6 |          0 |         35 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\models\friendShip.model.js                      | JavaScript |         37 |          6 |          4 |         47 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\models\index.model.js                           | JavaScript |         38 |          0 |          4 |         42 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\models\notificationFriendShip.model.js          | JavaScript |         63 |          7 |          4 |         74 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\models\post.model.js                            | JavaScript |         32 |          6 |          0 |         38 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\models\profileContact.model.js                  | JavaScript |         38 |          6 |          0 |         44 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\config\sql\models\user.model.js                            | JavaScript |         49 |          6 |          6 |         61 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\controllers\app.controller.js                              | JavaScript |        123 |          1 |          9 |        133 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\controllers\chat.controller.js                             | JavaScript |        114 |          0 |         10 |        124 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\controllers\user.controller.js                             | JavaScript |        184 |          1 |         20 |        205 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\middleware\handleException.middleware.js                   | JavaScript |         16 |          8 |          6 |         30 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\middleware\user.middleware.js                              | JavaScript |         40 |          1 |          4 |         45 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\routes\auth.route.js                                       | JavaScript |         17 |          0 |          7 |         24 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\routes\chat.route.js                                       | JavaScript |         18 |          0 |          3 |         21 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\routes\index.js                                            | JavaScript |         14 |          0 |          4 |         18 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\routes\user.route.js                                       | JavaScript |         30 |          0 |         12 |         42 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\services\app.service.js                                    | JavaScript |        177 |          3 |         12 |        192 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\services\chat.service.js                                   | JavaScript |        158 |          0 |          5 |        163 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\services\user.service.js                                   | JavaScript |        503 |          3 |         21 |        527 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\ultils\customizeUser.js                                    | JavaScript |         31 |          0 |          7 |         38 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\ultils\handleJwt.js                                        | JavaScript |         34 |          0 |          5 |         39 |
+| d:\CongNgheMoi\Zalo_Express_Backend\src\ultils\types.js                                            | JavaScript |         14 |          0 |          3 |         17 |
+| d:\CongNgheMoi\Zalo_Express_Backend\views\index.ejs                                                | HTML       |         26 |          0 |          3 |         29 |
+| Total                                                                                              |            |     12,732 |         85 |        224 |     13,041 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

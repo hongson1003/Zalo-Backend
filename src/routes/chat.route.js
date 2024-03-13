@@ -11,7 +11,7 @@ const InitRoutesChat = (router) => {
     router.route('/group')
         .post(userMiddleware.checkJWT, chatController.createGroupChat)
 
-    router.route('/messrage')
+    router.route('/message')
         .post(userMiddleware.checkJWT, chatController.sendMessage)
     router.route('/message/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyMessagePagination)

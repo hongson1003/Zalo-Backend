@@ -1,6 +1,8 @@
 import Chat from "../config/nosql/models/chat.model";
 import Message from "../config/nosql/models/message.model";
 import { STATUS_CHAT } from '../ultils/types';
+import CustomizeChat from '../ultils/customizeChat';
+
 const accessChat = async (data) => {
     try {
         const isChatRes = await findOnePrivateChat(data.participants[0], data.participants[1]);
@@ -72,11 +74,13 @@ const findManyChatPagination = async (userId, page, limit) => {
             }
         }).skip(offset).limit(limit);
 
+        const mapUsers = await CustomizeChat.getMapUserTargetId(chats);
+        const newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
         if (chats.length > 0) {
             return {
                 errCode: 0,
                 message: 'Get chats successfully!',
-                data: chats
+                data: newChats
             }
         }
         return {

@@ -2,6 +2,9 @@ import userController from '../controllers/user.controller';
 import userMiddleware from '../middleware/user.middleware';
 
 const IntRoutesUsers = (router) => {
+    router.route('/getMany')
+        .post(userController.getMany)
+
     router.route('/info')
         .get(userMiddleware.checkJWT, userController.findUserById)
 

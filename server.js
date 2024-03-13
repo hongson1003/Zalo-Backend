@@ -31,14 +31,32 @@ io.on('connection', function (socket) {
     socket.in(data.room).emit('need-to-verify', data);
   });
 
-  socket.on("disconnect", (reason) => {
-    // else the socket will automatically try to reconnect
-  });
+
+  socket.on('join-chat', (room) => {
+    socket.join(room);
+    socket.emit('joined-chat', room);
+  })
 
   socket.on('send-add-friend', (data) => {
     socket.in(data?.id).emit('need-accept-addFriend', data);
   })
 
+  socket.on('send-message', (data) => {
+    socket.in(data.chatId).emit('receive-message', data);
+  })
+
+  socket.on('typing', (room) => {
+    socket.in(room).emit('typing');
+  })
+
+  socket.on('finish-typing', (room) => {
+    socket.in(room).emit('finish-typing');
+  })
+
+
+  socket.on("disconnect", (reason) => {
+    // else the socket will automatically try to reconnect
+  });
 
 
 });

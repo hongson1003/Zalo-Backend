@@ -184,6 +184,22 @@ const findFriendsPagination = async (req, res, next) => {
 
 }
 
+const getMany = async (req, res, next) => {
+    try {
+        const ids = req.body.ids;
+        if (!ids) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.getMany(ids);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 module.exports = {
@@ -201,5 +217,6 @@ module.exports = {
     findAllNotifications,
     findAllNotificationsNotRead,
     updateNotification,
-    findFriendsPagination
+    findFriendsPagination,
+    getMany
 }
