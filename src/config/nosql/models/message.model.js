@@ -14,23 +14,18 @@ const MessageModel = Schema({
         require: true,
     },
     content: String,
+    type: String,
     videos: [{
         type: String,
         require: false,
         default: null
-
     }],
     images: [{
         type: String,
         require: false,
         default: null
-
     }],
-    sticker: {
-        type: String,
-        require: false,
-        default: null
-    },
+    sticker: String,
     status: Boolean
 }, {
     timestamps: true,

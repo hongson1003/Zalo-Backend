@@ -27,6 +27,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
+      lastedOnline: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       refresh_token: {
         type: Sequelize.STRING,
         allowNull: true,

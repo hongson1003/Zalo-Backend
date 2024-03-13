@@ -2,6 +2,7 @@ import Chat from "../config/nosql/models/chat.model";
 import Message from "../config/nosql/models/message.model";
 import { STATUS_CHAT } from '../ultils/types';
 import CustomizeChat from '../ultils/customizeChat';
+import Background from "../config/nosql/models/background.model";
 
 const accessChat = async (data) => {
     try {
@@ -157,11 +158,33 @@ const findManyMessagePagination = async (chatId, page, limit) => {
         throw error;
     }
 }
+
+const findManyBackgroundPagination = async (page, limit) => {
+    try {
+        const offset = (page - 1) * limit;
+        const backgrounds = await Background.find().skip(offset).limit(limit);
+        if (backgrounds.length > 0) {
+            return {
+                errCode: 0,
+                message: 'Get backgrounds successfully!',
+                data: backgrounds
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Backgrounds not found!',
+            data: []
+        }
+    } catch (error) {
+        throw error;
+    }
+}
 module.exports = {
     accessChat,
     findOnePrivateChat,
     findManyChatPagination,
     createGroupChat,
     sendMessage,
-    findManyMessagePagination
+    findManyMessagePagination,
+    findManyBackgroundPagination
 }

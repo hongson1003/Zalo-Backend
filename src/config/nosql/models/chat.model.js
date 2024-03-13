@@ -34,6 +34,11 @@ const ChatModel = Schema({
         ref: "Message",
         require: false
     },
+    background: {
+        type: Schema.Types.ObjectId,
+        ref: "Background",
+        require: false
+    },
     status: Boolean,
 }, {
     timestamps: true,

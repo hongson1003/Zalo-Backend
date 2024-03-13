@@ -61,6 +61,7 @@ const verifyUser = async (id, phoneNumber) => {
             let access_token = handleJwt.signJwt(user, secret, expiresIn);
             let refresh_token = uuidv4();
             userRaw.refresh_token = refresh_token;
+            userRaw.lastedOnline = null;
             await userRaw.save();
             return {
                 errCode: 0,
@@ -131,6 +132,7 @@ const updateToken = async (refresh_token_old) => {
             const userClient = customizeUser.standardUser(user);
             const token = handleJwt.signJwt(userClient, secret, expiresIn);
             userRaw.refresh_token = refresh_token;
+            userRaw.lastedOnline = null;
             await userRaw.save();
             return {
                 errCode: 0,

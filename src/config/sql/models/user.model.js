@@ -50,6 +50,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     avatar: DataTypes.STRING,
+    lastedOnline: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     refresh_token: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

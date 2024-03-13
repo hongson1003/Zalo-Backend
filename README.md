@@ -6,7 +6,9 @@ Ok.Let's start
 1. CLone my github
 2. Open vscode, ctrl + '`'
 3. Run 'npm i' from the command line
-4. Run 'npm start' to start server.
+4. node src/config/nosql/seeders/background
+5. npx sequelize-cli db:migrate
+6. Run 'npm start' to start server.
 
 Thanks.
    
