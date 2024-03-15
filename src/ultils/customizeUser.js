@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 const saltRounds = 10;
-const keyUserRegister = ['id', 'phoneNumber', 'userName', 'avatar'];
+const keyUserRegister = ['id', 'phoneNumber', 'userName', 'avatar', 'lastedOnline'];
 const keyProfile = ['birthdate', 'gender', 'soundTrack', 'coverImage', 'description'];
 
 const hashPassword = (myPlaintextPassword) => {

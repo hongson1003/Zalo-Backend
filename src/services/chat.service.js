@@ -139,18 +139,24 @@ const sendMessage = async (data) => {
 const findManyMessagePagination = async (chatId, page, limit) => {
     try {
         const offset = (page - 1) * limit;
-        const messages = await Message.find({
-            chatId: chatId
-        }).skip(offset).limit(limit);
+        const messages = await Message.find({ chat: chatId }).populate('chat')
+            .skip(offset).limit(limit);
+
+        const mapUsers = await CustomizeChat.getMapUserTargetId(messages.map(item => item.chat));
+        let newMessages = messages.map(item => {
+            let newItem = { ...item.toObject() };
+            newItem.sender = mapUsers[String(item.sender)];
+            return newItem;
+        })
         if (messages.length > 0) {
             return {
                 errCode: 0,
                 message: 'Get messages successfully!',
-                data: messages
+                data: newMessages
             }
         }
         return {
-            errCode: -1,
+            errCode: 1,
             message: 'Messages not found!',
             data: []
         }
@@ -179,6 +185,37 @@ const findManyBackgroundPagination = async (page, limit) => {
         throw error;
     }
 }
+const setBackgroundForChat = async (data) => {
+    try {
+        const chat = await Chat.findById(data.chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        chat.backgroundUrl = data.backgroundUrl;
+        const result = await chat.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Set background for chat successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Set background for chat failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+
+}
+
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -186,5 +223,6 @@ module.exports = {
     createGroupChat,
     sendMessage,
     findManyMessagePagination,
-    findManyBackgroundPagination
+    findManyBackgroundPagination,
+    setBackgroundForChat
 }

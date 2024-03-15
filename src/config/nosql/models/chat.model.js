@@ -11,29 +11,27 @@ const ChatModel = Schema({
     },
     participants: [{
         type: Number,
-        ref: 'User'
     }],
     groupPhoto: String,
-    lastedMessage: {
-        type: {
-            users: [{
-                type: Number,
-                ref: 'User',
-                require: true
-            }],
-            id: {
-                type: Schema.Types.ObjectId,
-                require: true,
-                ref: "Message"
-            }
-        },
-        require: false
-    },
-    pinnedMessages: {
-        type: Schema.Types.ObjectId,
-        ref: "Message",
-        require: false
-    },
+    // lastedMessage: {
+    //     type: {
+    //         users: [{
+    //             type: Number,
+    //             require: true
+    //         }],
+    //         id: {
+    //             type: Schema.Types.ObjectId,
+    //             require: true,
+    //             ref: "Message"
+    //         }
+    //     },
+    //     require: false
+    // },
+    // pinnedMessages: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Message",
+    //     require: false
+    // },
     background: {
         type: Schema.Types.ObjectId,
         ref: "Background",

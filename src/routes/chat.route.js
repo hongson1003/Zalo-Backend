@@ -18,6 +18,9 @@ const InitRoutesChat = (router) => {
 
         router.route('/background/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyBackgroundPagination)
+
+        router.route('/background')
+            .post(userMiddleware.checkJWT, chatController.setBackgroundForChat)
     return router;
 }
 

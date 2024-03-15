@@ -82,7 +82,7 @@ const sendMessage = async (req, res, next) => {
         const userId = req.user.id;
         const data = req.body;
         data.senderId = userId;
-        if (!data || Object.keys(data).length == 0 || !data.chatId || !data.senderId) {
+        if (!data || Object.keys(data).length == 0 || !data.chat || !data.sender) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
         const response = await chatService.sendMessage(data);
@@ -133,6 +133,22 @@ const findManyBackgroundPagination = async (req, res, next) => {
     }
 }
 
+const setBackgroundForChat = async (req, res, next) => {
+    try {
+        const data = req.body;
+        if (!data || Object.keys(data).length == 0 || !data.chatId || !data.backgroundUrl) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.setBackgroundForChat(data);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+
+
 module.exports = {
     accessChat,
     findOneByPrivate,
@@ -140,5 +156,6 @@ module.exports = {
     createGroupChat,
     sendMessage,
     findManyMessagePagination,
-    findManyBackgroundPagination
+    findManyBackgroundPagination,
+    setBackgroundForChat
 }
