@@ -200,6 +200,16 @@ const getMany = async (req, res, next) => {
     }
 }
 
+const testAPI = async (req, res, next) => {
+    try {
+        return res.status(200).json({
+            message: 'Test API'
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 module.exports = {
@@ -218,5 +228,6 @@ module.exports = {
     findAllNotificationsNotRead,
     updateNotification,
     findFriendsPagination,
-    getMany
+    getMany,
+    testAPI
 }

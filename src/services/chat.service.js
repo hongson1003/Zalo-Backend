@@ -215,6 +215,75 @@ const setBackgroundForChat = async (data) => {
 
 }
 
+const addFeeling = async (_id, userId, icon) => {
+    try {
+        const message = await Message.findById(_id);
+        if (!message) {
+            return {
+                errCode: -1,
+                message: 'Message not found!',
+                data: {}
+            }
+        }
+        if (message.reactions.length > 0) {
+            const index = message.reactions.findIndex(item => (
+                item.userId == userId && item.icon == icon
+            ));
+            if (index > -1) {
+                message.reactions[index].count += 1;
+            } else {
+                message.reactions.push({ userId, icon });
+            }
+        } else {
+            message.reactions.push({ userId, icon });
+        }
+        const result = await message.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Add feeling for message successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Add feeling for message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const clearReactions = async (_id) => {
+    try {
+        const message = await Message.findById(_id);
+        if (!message) {
+            return {
+                errCode: -1,
+                message: 'Message not found!',
+                data: {}
+            }
+        }
+        message.reactions = [];
+        const result = await message.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Clear reactions for message successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Clear reactions for message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 module.exports = {
     accessChat,
@@ -224,5 +293,7 @@ module.exports = {
     sendMessage,
     findManyMessagePagination,
     findManyBackgroundPagination,
-    setBackgroundForChat
+    setBackgroundForChat,
+    addFeeling,
+    clearReactions
 }

@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
   })
 
   socket.on('send-message', (data) => {
-    socket.in(data.chatId).emit('receive-message', data);
+    socket.in(data.chat).emit('receive-message', data);
   })
 
   socket.on('typing', (room) => {

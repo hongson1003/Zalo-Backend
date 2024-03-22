@@ -16,11 +16,15 @@ const InitRoutesChat = (router) => {
     router.route('/message/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyMessagePagination)
 
-        router.route('/background/pagination')
+    router.route('/background/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyBackgroundPagination)
 
-        router.route('/background')
-            .post(userMiddleware.checkJWT, chatController.setBackgroundForChat)
+    router.route('/background')
+        .post(userMiddleware.checkJWT, chatController.setBackgroundForChat)
+
+    router.route('/feeling', userMiddleware.checkJWT)
+        .post(chatController.addFeeling)
+        .put(chatController.clearReactions)
     return router;
 }
 

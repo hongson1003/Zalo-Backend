@@ -2,6 +2,9 @@ import userController from '../controllers/user.controller';
 import userMiddleware from '../middleware/user.middleware';
 
 const IntRoutesUsers = (router) => {
+    router.route('/test')
+        .get(userController.testAPI);
+
     router.route('/getMany')
         .post(userController.getMany)
 

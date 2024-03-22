@@ -147,6 +147,31 @@ const setBackgroundForChat = async (req, res, next) => {
 
 }
 
+const addFeeling = async (req, res, next) => {
+    try {
+        const { messageId, userId, icon } = req.body;
+        if (!userId || !icon) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.addFeeling(messageId, userId, icon);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const clearReactions = async (req, res, next) => {
+    try {
+        const messageId = req.body.messageId;
+        if (!messageId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.clearReactions(messageId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 module.exports = {
@@ -157,5 +182,7 @@ module.exports = {
     sendMessage,
     findManyMessagePagination,
     findManyBackgroundPagination,
-    setBackgroundForChat
+    setBackgroundForChat,
+    addFeeling,
+    clearReactions
 }
