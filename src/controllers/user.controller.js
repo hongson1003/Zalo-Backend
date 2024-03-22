@@ -200,6 +200,30 @@ const getMany = async (req, res, next) => {
     }
 }
 
+const updateUserInfor = async(req, res) => {
+    const { id } = req.body.id;
+    const { userName, gender, dob } = req.body;
+
+    try {
+
+        const result = await userService.updateUserInfor({id, userName, gender, dob });
+        if (!result) {
+            return res.status(404).json({
+                errCode: 404,
+                message: 'User not found',
+                data: null
+            });
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({
+            errCode: 500,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+}
+
 const testAPI = async (req, res, next) => {
     try {
         return res.status(200).json({
@@ -229,5 +253,6 @@ module.exports = {
     updateNotification,
     findFriendsPagination,
     getMany,
-    testAPI
+    testAPI,
+    updateUserInfor
 }

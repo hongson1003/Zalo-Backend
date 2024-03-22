@@ -528,6 +528,35 @@ const getMany = async (ids) => {
         throw new Error(error);
     }
 }
+
+const updateUserInfor = async (newInfor) => {
+    const {id, userName, gender, dob } = newInfo;
+    try {
+        const user = await db.User.findOne({
+            where: {
+                id: id,
+            }
+        });
+        if (user) {
+            // Update user attributes if data is provided
+            if (userName) user.userName = userName;
+            if (gender) user.gender = gender;
+            if (dob) user.dateOfBirth = dob;
+
+            // Save the updated user infor
+            await user.save();
+
+            return {
+                errCode: 0,
+                message: 'Update user information successfully',
+                data: user
+            };
+        }
+        return null;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 module.exports = {
     getAllUsers,
     getUserById,
@@ -545,5 +574,6 @@ module.exports = {
     findAllNotificationsNotRead,
     updateReadStatusNofificationFriend,
     findFriendsPagination,
-    getMany
+    getMany,
+    updateUserInfor
 }
