@@ -15,7 +15,11 @@ require('dotenv').config();
 const app = express();
 
 app.use(function (req, res, next) {
-  const allowedOrigins = ['http://localhost:8096', 'http://localhost:5500'];
+  const allowedOrigins = [
+    'http://localhost:8096',
+    'http://localhost:5500',
+    'http://localhost:8081'
+  ];
   const origin = req.headers.origin;
 
   // res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type, Accept,Authorization,Origin");
