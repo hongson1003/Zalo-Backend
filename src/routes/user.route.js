@@ -42,6 +42,9 @@ const IntRoutesUsers = (router) => {
     router.route('/notifications/friendShip/noread')
         .get(userMiddleware.checkJWT, userController.findAllNotificationsNotRead)
 
+    router.route('/updateInfor')
+        .post(userController.updateUserInfor)
+
     return router;
 }
 

@@ -53,12 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     lastedOnline: {
       type: DataTypes.DATE,
       allowNull: true,
-    },
-    gender: {
-      type: DataTypes.BIT,
-      allowNull: true,
-    },
-    dateOfBirth: DataTypes.DATE,
+    } ,
     refresh_token: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

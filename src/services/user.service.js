@@ -532,19 +532,25 @@ const getMany = async (ids) => {
 const updateUserInfor = async (newInfor) => {
     const {id, userName, gender, dob } = newInfo;
     try {
-        const user = await db.User.findOne({
+        const userInfor = await db.ProfileContact.findOne({
             where: {
-                id: id,
+                userId: id,
             }
         });
-        if (user) {
+        const user = await db.User.findOne({
+            where: {
+                id: Number(id),
+            }
+        })
+        if (user && userInfor) {
             // Update user attributes if data is provided
             if (userName) user.userName = userName;
-            if (gender) user.gender = gender;
-            if (dob) user.dateOfBirth = dob;
+            if (gender) userInfor.gender = gender;
+            if (dob) userInfor.birthdate = new Date(dob);
 
             // Save the updated user infor
             await user.save();
+            await userInfor.save();
 
             return {
                 errCode: 0,
