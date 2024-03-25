@@ -530,35 +530,41 @@ const getMany = async (ids) => {
 }
 
 const updateUserInfor = async (newInfor) => {
-    const {id, userName, gender, dob } = newInfo;
+    const { id, userName, gender, birthdate } = newInfor;
     try {
         const userInfor = await db.ProfileContact.findOne({
             where: {
-                userId: id,
-            }
-        });
+                userId: id
+            },
+            raw: false
+        })
         const user = await db.User.findOne({
             where: {
-                id: Number(id),
-            }
-        })
+                id
+            },
+            raw: false
+        });
         if (user && userInfor) {
             // Update user attributes if data is provided
             if (userName) user.userName = userName;
             if (gender) userInfor.gender = gender;
-            if (dob) userInfor.birthdate = new Date(dob);
-
+            if (birthdate) userInfor.birthdate = new Date(birthdate);
             // Save the updated user infor
-            await user.save();
-            await userInfor.save();
-
+            const userData = await user.save();
+            const profileData = await userInfor.save();
+            const data = userData.dataValues;
+            data.info = profileData.dataValues;
             return {
                 errCode: 0,
                 message: 'Update user information successfully',
-                data: user
+                data: data
             };
         }
-        return null;
+        return {
+            errCode: 1,
+            message: 'User not found',
+            data: null
+        }
     } catch (error) {
         throw new Error(error);
     }

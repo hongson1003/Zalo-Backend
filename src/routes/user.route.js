@@ -12,7 +12,7 @@ const IntRoutesUsers = (router) => {
         .get(userMiddleware.checkJWT, userController.findUserById)
 
     router.route('/user-by-phone')
-        .get(userMiddleware.checkJWT, userController.findUserByPhone)
+        .get(userController.findUserByPhone)
 
     router.route('/profile')
         .post(userMiddleware.checkJWT, userController.createInfoContact)
@@ -43,7 +43,7 @@ const IntRoutesUsers = (router) => {
         .get(userMiddleware.checkJWT, userController.findAllNotificationsNotRead)
 
     router.route('/updateInfor')
-        .post(userController.updateUserInfor)
+        .put(userController.updateUserInfor)
 
     return router;
 }

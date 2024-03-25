@@ -18,20 +18,19 @@ app.use(function (req, res, next) {
   const allowedOrigins = [
     'http://localhost:8096',
     'http://localhost:5500',
-    'http://localhost:8081'
+    'http://localhost:8081',
+    'http://localhost:19006',
+    'http://localhost:8080',
+    ''
   ];
   const origin = req.headers.origin;
 
-  // res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type, Accept,Authorization,Origin");
   res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
 
-  // res.header("Access-Control-Allow-Origin", "*");
-
-  res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   next();

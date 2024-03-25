@@ -200,13 +200,16 @@ const getMany = async (req, res, next) => {
     }
 }
 
-const updateUserInfor = async(req, res) => {
-    const { id } = req.body.id;
-    const { userName, gender, dob } = req.body;
-
+const updateUserInfor = async (req, res) => {
+    const { id, userName, gender, birthdate } = req.body;
+    if (!id || !userName || gender === undefined || !birthdate) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
     try {
-
-        const result = await userService.updateUserInfor({id, userName, gender, dob });
+        const result = await userService.updateUserInfor(req.body);
         if (!result) {
             return res.status(404).json({
                 errCode: 404,
