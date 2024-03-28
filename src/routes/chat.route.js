@@ -25,6 +25,8 @@ const InitRoutesChat = (router) => {
     router.route('/feeling', userMiddleware.checkJWT)
         .post(chatController.addFeeling)
         .put(chatController.clearReactions)
+
+
     return router;
 }
 

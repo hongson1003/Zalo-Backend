@@ -16,10 +16,12 @@ const accessChat = async (data) => {
         }
         const chat = new Chat(data);
         const result = await chat.save();
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
         return {
             errCode: 0,
             message: 'Access chat successfully!',
-            data: result,
+            data: newChats,
         }
     } catch (error) {
         console.log(error)
@@ -49,10 +51,19 @@ const findOnePrivateChat = async (user1Id, user2Id) => {
             ]
         });
         if (chat) {
+            const mapUsers = await CustomizeChat.getMapUserTargetId([chat]);
+            const [newChats] = CustomizeChat.handleAddUserToParticipants([chat], mapUsers);
+            if (chat) {
+                return {
+                    errCode: 0,
+                    message: 'Get chat successfully!',
+                    data: newChats
+                }
+            }
             return {
-                errCode: 0,
-                message: 'Get chat successfully!',
-                data: chat
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
             }
         }
         return {
@@ -60,6 +71,7 @@ const findOnePrivateChat = async (user1Id, user2Id) => {
             message: 'Chat not found!',
             data: {}
         }
+
     } catch (error) {
         throw error;
     }

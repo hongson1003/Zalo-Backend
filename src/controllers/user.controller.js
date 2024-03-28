@@ -237,8 +237,6 @@ const testAPI = async (req, res, next) => {
     }
 }
 
-
-
 module.exports = {
     findAllUsers,
     findUserById,
