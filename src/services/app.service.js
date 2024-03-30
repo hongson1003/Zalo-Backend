@@ -60,7 +60,6 @@ const verifyUser = async (id, phoneNumber) => {
         if (Object.keys(user).length !== 0) {
             const deletedAvatar = { ...user };
             delete deletedAvatar.avatar;
-            console.log(deletedAvatar)
             let access_token = handleJwt.signJwt(deletedAvatar, secret, expiresIn);
             let refresh_token = uuidv4();
             userRaw.refresh_token = refresh_token;

@@ -18,7 +18,6 @@ const verify = (token, secret) => {
         });
         return myDecoded;
     } catch (error) {
-        console.log('verify')
         throw error
     }
 }

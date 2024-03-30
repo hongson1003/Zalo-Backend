@@ -2,6 +2,7 @@ import handleJwt from '../ultils/handleJwt';
 import { TokenExpiredError } from 'jsonwebtoken';
 import customizeUser from '../ultils/customizeUser';
 import userService from '../services/user.service';
+import appService from '../services/app.service';
 require('dotenv').config();
 const SECRET = process.env.SECRET;
 const MAX_AGE = process.env.MAX_AGE;
