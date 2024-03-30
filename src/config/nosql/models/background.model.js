@@ -4,7 +4,9 @@ const { Schema } = mongoose;
 const BackgroundModel = Schema({
     _id: Schema.Types.ObjectId,
     name: String,
-    backgroundUrl: String,
+    headerColor: String,
+    messageColor: String,
+    url: String,
 }, {
     timestamps: true,
 }

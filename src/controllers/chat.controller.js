@@ -136,11 +136,11 @@ const findManyBackgroundPagination = async (req, res, next) => {
 
 const setBackgroundForChat = async (req, res, next) => {
     try {
-        const data = req.body;
-        if (!data || Object.keys(data).length == 0 || !data.chatId || !data.backgroundUrl) {
+        const { chatId, backgroundId } = req.body;
+        if (!chatId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
-        const response = await chatService.setBackgroundForChat(data);
+        const response = await chatService.setBackgroundForChat(chatId, backgroundId);
         return res.status(200).json(response);
     } catch (error) {
         next(error);

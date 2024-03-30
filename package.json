@@ -6,7 +6,8 @@
     "node": ">= 7.6.0"
   },
   "scripts": {
-    "start": "nodemon server.js --exec babel-node"
+    "start": "nodemon server.js --exec babel-node",
+    "generate-bg": "node src/config/nosql/seeders/background.seeders.js"
   },
   "dependencies": {
     "axios": "0.15.3",

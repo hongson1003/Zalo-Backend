@@ -58,7 +58,10 @@ const verifyUser = async (id, phoneNumber) => {
         })
         let user = customizeUser.standardUser(userRaw?.dataValues);
         if (Object.keys(user).length !== 0) {
-            let access_token = handleJwt.signJwt(user, secret, expiresIn);
+            const deletedAvatar = { ...user };
+            delete deletedAvatar.avatar;
+            console.log(deletedAvatar)
+            let access_token = handleJwt.signJwt(deletedAvatar, secret, expiresIn);
             let refresh_token = uuidv4();
             userRaw.refresh_token = refresh_token;
             userRaw.lastedOnline = null;
@@ -130,7 +133,9 @@ const updateToken = async (refresh_token_old) => {
         if (user) {
             const refresh_token = uuidv4();
             const userClient = customizeUser.standardUser(user);
-            const token = handleJwt.signJwt(userClient, secret, expiresIn);
+            const deletedAvatar = { ...userClient };
+            delete deletedAvatar.avatar;
+            const token = handleJwt.signJwt(deletedAvatar, secret, expiresIn);
             userRaw.refresh_token = refresh_token;
             userRaw.lastedOnline = null;
             await userRaw.save();

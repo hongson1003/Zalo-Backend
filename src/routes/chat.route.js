@@ -20,7 +20,7 @@ const InitRoutesChat = (router) => {
         .get(userMiddleware.checkJWT, chatController.findManyBackgroundPagination)
 
     router.route('/background')
-        .post(userMiddleware.checkJWT, chatController.setBackgroundForChat)
+        .put(userMiddleware.checkJWT, chatController.setBackgroundForChat)
 
     router.route('/feeling', userMiddleware.checkJWT)
         .post(chatController.addFeeling)

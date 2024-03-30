@@ -237,6 +237,24 @@ const testAPI = async (req, res, next) => {
     }
 }
 
+const updateAvatar = async (req, res, next) => {
+    try {
+        const { avatar } = req.body;
+        const userId = req.user.id;
+        if (!userId || !avatar) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.updateAvatar(userId, avatar);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
 module.exports = {
     findAllUsers,
     findUserById,
@@ -255,5 +273,6 @@ module.exports = {
     findFriendsPagination,
     getMany,
     testAPI,
-    updateUserInfor
+    updateUserInfor,
+    updateAvatar
 }

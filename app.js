@@ -40,14 +40,15 @@ app.set('view engine', 'ejs'); // we use the engine pug, mustache or EJS work gr
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
-
 app.use(expressValidator());
 
 app.use(cookieParser());
 
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // app.use((req, res, next) => {
 //   res.locals.user = req.user || null;
 //   res.locals.currentPath = req.path;

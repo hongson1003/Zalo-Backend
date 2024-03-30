@@ -85,7 +85,9 @@ const findManyChatPagination = async (userId, page, limit) => {
                     $eq: userId
                 }
             }
-        }).skip(offset).limit(limit);
+        }).skip(offset)
+            .limit(limit)
+            .populate('background');
 
         const mapUsers = await CustomizeChat.getMapUserTargetId(chats);
         const newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
@@ -197,9 +199,9 @@ const findManyBackgroundPagination = async (page, limit) => {
         throw error;
     }
 }
-const setBackgroundForChat = async (data) => {
+const setBackgroundForChat = async (chatId, backgroundId) => {
     try {
-        const chat = await Chat.findById(data.chatId);
+        const chat = await Chat.findById(chatId);
         if (!chat) {
             return {
                 errCode: -1,
@@ -207,13 +209,15 @@ const setBackgroundForChat = async (data) => {
                 data: {}
             }
         }
-        chat.backgroundUrl = data.backgroundUrl;
+        chat.background = backgroundId;
         const result = await chat.save();
+        const chatPopulated = await Chat.findById(chatId)
+            .populate('background');
         if (result) {
             return {
                 errCode: 0,
                 message: 'Set background for chat successfully!',
-                data: result
+                data: chatPopulated
             }
         }
         return {

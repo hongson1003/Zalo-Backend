@@ -49,11 +49,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    avatar: DataTypes.STRING,
+    avatar: DataTypes.BLOB('long'),
     lastedOnline: {
       type: DataTypes.DATE,
       allowNull: true,
-    } ,
+    },
     refresh_token: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

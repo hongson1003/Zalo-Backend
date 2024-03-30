@@ -14,6 +14,11 @@ const checkPassword = (myPlaintextPassword, hashedPassword) => {
 
 const standardUser = (user) => {
     let myUser = { ...user };
+    if (myUser.avatar) {
+        const avatar = myUser.avatar;
+        const base64 = Buffer.from(avatar, 'base64');
+        myUser.avatar = base64.toString();
+    }
     for (let key in myUser)
         if (!keyUserRegister.includes(key))
             delete myUser[key];

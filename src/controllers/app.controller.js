@@ -1,7 +1,7 @@
-import appService from '../services/app.service';
 import handleJwt from '../ultils/handleJwt';
 import { TokenExpiredError } from 'jsonwebtoken';
 import customizeUser from '../ultils/customizeUser';
+import userService from '../services/user.service';
 require('dotenv').config();
 const SECRET = process.env.SECRET;
 const MAX_AGE = process.env.MAX_AGE;
@@ -63,16 +63,19 @@ const check = async (req, res, next) => {
         })
     try {
         let decoded = handleJwt.verify(access_token, SECRET);
-        let user = customizeUser.standardUser(decoded?.data);
+        const userDecoded = decoded?.data;
+        const userRes = await userService.getUserById(userDecoded.id);
+        const stardardUser = customizeUser.standardUser(userRes.data);
         return res.status(200).json({
             errCode: 0,
             data: {
-                user: user,
+                user: stardardUser,
                 access_token,
                 refresh_token
             },
         })
     } catch (error) {
+        console.log(error)
         if (error instanceof TokenExpiredError) {
             // refresh token
             const rs = await appService.updateToken(refresh_token);

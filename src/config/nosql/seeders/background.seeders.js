@@ -5,65 +5,72 @@ connectNoSql();
 // Dữ liệu mẫu bạn muốn thêm
 const sampleBackgrounds = [
     {
-        name: 'Cat 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/cat.1.bg.jpg'
+        name: 'Tín hiệu từ vũ trụ',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-19-1.jpg'
     },
     {
-        name: 'Cat 2',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/cat.2.bg.jpg'
+        name: 'Tín hiệu từ vũ trụ',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://haycafe.vn/wp-content/uploads/2022/01/Hinh-anh-hinh-nen-trai-dat-va-mat-troi.jpg'
     },
     {
-        name: 'Friend 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/friend.1.bg.jpg'
+        name: 'Hình nền Trái Tim đẹp',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://png.pngtree.com/thumb_back/fw800/background/20240204/pngtree-beautiful-hearts-valentine-day-background-image_15604624.png'
     },
     {
-        name: 'Friend 2',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/friend.2.bg.jpg'
+        name: 'Hồng cute 1',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://img6.thuthuatphanmem.vn/uploads/2022/09/28/anh-hinh-nen-mau-hong_081220225.jpg'
     },
     {
-        name: 'Hourse 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/house.1.bg.jpg'
+        name: 'Hồng cute 2',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://img6.thuthuatphanmem.vn/uploads/2022/09/28/hinh-nen-trai-tim-tinh-yeu-cute-mau-hong_081230715.jpg'
     },
     {
-        name: 'Hourse 3',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/house.3.bg.jpg'
+        name: 'Hồng cute 3',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://phunugioi.com/wp-content/uploads/2020/08/hinh-nen-mau-hong-trai-tim-tinh-yeu.jpg'
     },
     {
-        name: 'Love 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/love.1.bg.jpg'
+        name: 'Hồng cute 4',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://demoda.vn/wp-content/uploads/2022/01/hinh-nen-trai-tim-dep-tao-thanh-tu-bong-bong-nuoc.jpg'
     },
     {
-        name: 'Love 2',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/love.2.bg.jpg'
+        name: 'Xe hơi',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://i.pinimg.com/originals/b0/0d/0c/b00d0cdbf06fab3b2d8cc6847a014495.jpg'
     },
     {
-        name: 'Panda 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/panda.1.bg.jpg'
+        name: 'Lamborghini Concepts',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/gateway-family/concept/2020_06/c_overview_01_M.jpg'
     },
     {
-        name: 'Panda 3',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/panda.3.bg.jpg'
+        name: 'Ô tô bóng nước',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://carshop.vn/wp-content/uploads/2022/07/hinh-nen-o-to-65.jpg'
     },
     {
-        name: 'Thiên nhiên 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/thiennhien.1.bg.jpg'
+        name: 'Sci Fi Cyberpunk HD Wallpaper',
+        headerColor: 'WHITE',
+        messageColor: 'BLACK',
+        url: 'https://images8.alphacoders.com/112/1128361.jpg'
     },
-    {
-        name: 'Tym 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/tym.1.bg.jpg'
-    },
-    {
-        name: 'Vũ trụ 1',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/vutru.1.bg.jpg'
-    },
-    {
-        name: 'Vũ trụ 2',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/vutru.2.bg.jpg'
-    },
-    {
-        name: 'Vũ trụ 3',
-        backgroundUrl: 'https://raw.githubusercontent.com/hongson1003/Zalo_Images/main/vutru.3.bg.jpg'
-    },
+
 ];
 
 // Thêm dữ liệu vào cơ sở dữ liệu

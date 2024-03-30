@@ -569,6 +569,32 @@ const updateUserInfor = async (newInfor) => {
         throw new Error(error);
     }
 }
+
+const updateAvatar = async (userId, avatar) => {
+    try {
+        const user = await db.User.findOne({
+            where: {
+                id: userId
+            },
+            raw: false
+        });
+        if (user) {
+            user.avatar = avatar;
+            await user.save();
+            return {
+                errCode: 0,
+                message: 'Update avatar success',
+                data: user
+            }
+        }
+        return {
+            errCode: 1,
+            message: 'User not found'
+        }
+    } catch (error) {
+        throw error;
+    }
+}
 module.exports = {
     getAllUsers,
     getUserById,
@@ -587,5 +613,6 @@ module.exports = {
     updateReadStatusNofificationFriend,
     findFriendsPagination,
     getMany,
-    updateUserInfor
+    updateUserInfor,
+    updateAvatar
 }
