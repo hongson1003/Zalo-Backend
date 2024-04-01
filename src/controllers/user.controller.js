@@ -255,6 +255,22 @@ const updateAvatar = async (req, res, next) => {
 
 }
 
+const updateOnline = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        if (!userId) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.updateOnline(userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     findAllUsers,
     findUserById,
@@ -274,5 +290,6 @@ module.exports = {
     getMany,
     testAPI,
     updateUserInfor,
-    updateAvatar
+    updateAvatar,
+    updateOnline
 }

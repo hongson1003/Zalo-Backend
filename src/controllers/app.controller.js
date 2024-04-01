@@ -66,17 +66,16 @@ const check = async (req, res, next) => {
         let decoded = handleJwt.verify(access_token, SECRET);
         const userDecoded = decoded?.data;
         const userRes = await userService.getUserById(userDecoded.id);
-        const stardardUser = customizeUser.standardUser(userRes.data);
+        const standardUser = customizeUser.standardUser(userRes.data);
         return res.status(200).json({
             errCode: 0,
             data: {
-                user: stardardUser,
+                user: standardUser,
                 access_token,
                 refresh_token
             },
         })
     } catch (error) {
-        console.log(error)
         if (error instanceof TokenExpiredError) {
             // refresh token
             const rs = await appService.updateToken(refresh_token);
@@ -126,6 +125,23 @@ const resetPassword = async (req, res, next) => {
     }
 }
 
+const changePassword = async (req, res, next) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const id = req.user.id;
+        if (!newPassword || !oldPassword || !id)
+            return res.status(200).json({
+                errCode: 1,
+                message: "Missing parameter",
+            })
+        let rs = await appService.changePassword(id, oldPassword, newPassword);
+        return res.status(200).json(rs);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
 
 module.exports = {
     register,
@@ -133,5 +149,6 @@ module.exports = {
     login,
     check,
     logout,
-    resetPassword
+    resetPassword,
+    changePassword
 }

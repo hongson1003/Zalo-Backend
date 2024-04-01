@@ -116,6 +116,7 @@ const getUserWithProfileById = async (phoneNumber) => {
         //ProfileContact
     });
     if (user) {
+        user.avatar = Buffer.from(user.avatar).toString('base64');
         return {
             errCode: 0,
             message: 'Get user success',
@@ -376,6 +377,11 @@ const findAllNotifications = async (userId, readStatus) => {
 }
 
 const findAllNotificationsNotRead = async (userId) => {
+    if (!userId) return {
+        errCode: 1,
+        message: 'User not found',
+        data: []
+    };
     const notifications = await db.NotificationFriendShip.findAll({
         where: {
             receiverId: userId,
@@ -546,9 +552,9 @@ const updateUserInfor = async (newInfor) => {
         });
         if (user && userInfor) {
             // Update user attributes if data is provided
-            if (userName) user.userName = userName;
-            if (gender) userInfor.gender = gender;
-            if (birthdate) userInfor.birthdate = new Date(birthdate);
+            user.userName = userName;
+            userInfor.gender = gender;
+            userInfor.birthdate = new Date(birthdate);
             // Save the updated user infor
             const userData = await user.save();
             const profileData = await userInfor.save();
@@ -595,6 +601,32 @@ const updateAvatar = async (userId, avatar) => {
         throw error;
     }
 }
+
+const updateOnline = async (userId) => {
+    try {
+        const user = await db.User.findOne({
+            where: {
+                id: userId
+            },
+            raw: false
+        });
+        if (user) {
+            user.lastedOnline = new Date();
+            await user.save();
+            return {
+                errCode: 0,
+                message: 'Update online success',
+                data: user
+            }
+        }
+        return {
+            errCode: 1,
+            message: 'User not found'
+        }
+    } catch (error) {
+        throw error;
+    }
+}
 module.exports = {
     getAllUsers,
     getUserById,
@@ -614,5 +646,6 @@ module.exports = {
     findFriendsPagination,
     getMany,
     updateUserInfor,
-    updateAvatar
+    updateAvatar,
+    updateOnline
 }

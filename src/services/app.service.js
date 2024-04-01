@@ -2,6 +2,18 @@ import db from '../config/sql/models/index.model';
 import customizeUser, { hashPassword } from '../ultils/customizeUser';
 import handleJwt from '../ultils/handleJwt';
 import { v4 as uuidv4 } from 'uuid';
+import { random_bg_color } from '../ultils/random';
+const host = process.env.BACKEND_URL;
+
+
+import fs from "fs";
+import path from "path";
+
+const boxes_path = path.resolve('public/data', "backgroundUser.json");
+const rawdata = fs.readFileSync(boxes_path);
+let data = JSON.parse(rawdata.toString());
+
+const random = parseInt(Math.random() * data.length);
 
 require('dotenv').config();
 const secret = process.env.SECRET
@@ -21,14 +33,21 @@ const register = async ({ userName, phoneNumber, password: plainPassword }) => {
                 message: 'User is exists, Please use new another phone'
             }
         //create new user;
+        const avatarRandom = random_bg_color();
         let refresh_token = uuidv4();
         let password = hashPassword(plainPassword);
         const user = await db.User.create({
             userName,
             phoneNumber, password,
-            refresh_token
+            refresh_token,
+            avatar: Buffer.from(avatarRandom, "utf-8"),
         });
-        if (user) {
+        // create profile user
+        const profile = await db.ProfileContact.create({
+            userId: user.id,
+            coverImage: host + data[random]?.url + '',
+        });
+        if (user && profile) {
             let userAfterCustomize = customizeUser.standardUser(user.dataValues);
             return {
                 errCode: 0,
@@ -189,10 +208,46 @@ const updatePassword = async (id, phoneNumber, password) => {
     }
 }
 
+const changePassword = async (id, oldPassword, newPassword) => {
+    try {
+        let userDB = await db.User.findOne({
+            where: {
+                id: id
+            },
+            raw: false,
+        })
+        if (userDB) {
+            let checkPassword = customizeUser.checkPassword(oldPassword, userDB.password);
+            if (checkPassword) {
+                userDB.password = hashPassword(newPassword);
+                await userDB.save();
+                const user = customizeUser.standardUser(userDB.dataValues);
+                return {
+                    errCode: 0,
+                    message: 'Change password success',
+                    user: user
+                }
+            }
+            return {
+                errCode: 3,
+                message: 'Not equal password for user. Please check !',
+            }
+        } else {
+            return {
+                errCode: 2,
+                message: 'Fail, First, please register account',
+            }
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     register,
     verifyUser,
     login,
     updateToken,
-    updatePassword
+    updatePassword,
+    changePassword
 }

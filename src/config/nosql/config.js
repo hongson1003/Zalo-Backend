@@ -15,7 +15,7 @@ async function connectNoSql() {
         await mongoose.connection.db.admin().command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!".italic.bgBrightGreen);
     } catch (err) {
-        console.log('lỗi', err)
+        throw err;
     }
     // finally {
     //     // Ensures that the client will close when you finish/error

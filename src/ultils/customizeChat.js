@@ -10,7 +10,13 @@ const getMapUserTargetId = async (chat) => {
         });
         const result = _.union(...arrayParticipants);
         const resUsers = await userService.getMany(result);
-        const users = JSON.parse(JSON.stringify(resUsers.data));
+        let users = JSON.parse(JSON.stringify(resUsers.data));
+        if (users.length > 0) {
+            users = users.map(item => {
+                item.avatar = Buffer.from(item.avatar.data).toString()
+                return item;
+            })
+        }
         const mapUsers = _.keyBy(users, 'id');
         return mapUsers;
     }

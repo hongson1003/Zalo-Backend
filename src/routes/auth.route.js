@@ -1,4 +1,5 @@
 import appController from '../controllers/app.controller';
+import userMiddleware from '../middleware/user.middleware';
 
 const InitRoutesAuthentication = (router) => {
     router.route('/')
@@ -17,6 +18,9 @@ const InitRoutesAuthentication = (router) => {
         .post(appController.verifyUser)
     router.route('/reset-password')
         .post(appController.resetPassword)
+
+    router.route('/change-password')
+        .put(userMiddleware.checkJWT, appController.changePassword)
 
     return router;
 }

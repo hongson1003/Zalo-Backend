@@ -24,7 +24,6 @@ const accessChat = async (data) => {
             data: newChats,
         }
     } catch (error) {
-        console.log(error)
         throw error;
     }
 }
@@ -49,7 +48,8 @@ const findOnePrivateChat = async (user1Id, user2Id) => {
                     }
                 }
             ]
-        });
+        })
+            .populate('background');
         if (chat) {
             const mapUsers = await CustomizeChat.getMapUserTargetId([chat]);
             const [newChats] = CustomizeChat.handleAddUserToParticipants([chat], mapUsers);
