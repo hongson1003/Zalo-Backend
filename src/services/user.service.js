@@ -426,11 +426,21 @@ const findAllNotificationsNotRead = async (userId) => {
             raw: true
         });
 
+        const standardNotifications = notifications.map(notification => {
+            const sender = notification.sender;
+            const receiver = notification.receiver;
+            const standardSender = customizeUser.standardUser(sender);
+            const standardReceiver = customizeUser.standardUser(receiver);
+            notification.sender = standardSender;
+            notification.receiver = standardReceiver;
+            return notification;
+        });
+
         if (notifications)
             return {
                 errCode: 0,
                 message: 'Find all notification success',
-                data: notifications
+                data: standardNotifications
             }
         else
             return {

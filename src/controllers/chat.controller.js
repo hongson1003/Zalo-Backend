@@ -80,9 +80,8 @@ const createGroupChat = async (req, res, next) => {
 
 const sendMessage = async (req, res, next) => {
     try {
-        const userId = req.user.id;
         const data = req.body;
-        data.senderId = userId;
+        data.sender = req.user.id;
         if (!data || Object.keys(data).length == 0 || !data.chat || !data.sender) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
