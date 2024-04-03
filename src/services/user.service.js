@@ -513,11 +513,22 @@ const findFriendsPagination = async (userId, page, limit) => {
             offset,
             limit
         });
+
+        const standardFriends = friends.map(friend => {
+            const user1 = friend.user1;
+            const user2 = friend.user2;
+            const standardUser1 = customizeUser.standardUser(user1);
+            const standardUser2 = customizeUser.standardUser(user2);
+            friend.user1 = standardUser1;
+            friend.user2 = standardUser2;
+            return friend;
+        })
+
         if (friends)
             return {
                 errCode: 0,
                 message: 'Find success',
-                data: friends
+                data: standardFriends
             }
         return {
             errCode: 1,
