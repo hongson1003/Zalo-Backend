@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { random_bg_color } from '../ultils/random';
 const host = process.env.BACKEND_URL;
 
-
 import fs from "fs";
 import path from "path";
 

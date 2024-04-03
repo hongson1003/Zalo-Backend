@@ -88,7 +88,6 @@ const findManyChatPagination = async (userId, page, limit) => {
         }).skip(offset)
             .limit(limit)
             .populate('background');
-
         const mapUsers = await CustomizeChat.getMapUserTargetId(chats);
         const newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
         if (chats.length > 0) {

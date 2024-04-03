@@ -41,19 +41,18 @@ const getUserById = async (id) => {
 }
 
 const getUserByPhone = async (phoneNumber) => {
-    const attributes = ['id', 'userName', 'phoneNumber', 'avatar'];
     try {
         const user = await db.User.findOne({
             where: {
                 phoneNumber,
             },
-            attributes
         });
+        const myUser = customizeUser.standardUser(user);
         if (user)
             return {
                 errCode: 0,
                 message: 'Get user success',
-                data: user
+                data: myUser
             }
         return null;
     } catch (error) {
@@ -116,7 +115,9 @@ const getUserWithProfileById = async (phoneNumber) => {
         //ProfileContact
     });
     if (user) {
-        user.avatar = Buffer.from(user.avatar).toString('base64');
+        const avatar = user.avatar;
+        const base64 = Buffer.from(avatar, 'base64');
+        user.avatar = base64.toString();
         return {
             errCode: 0,
             message: 'Get user success',
@@ -362,6 +363,16 @@ const findAllNotifications = async (userId, readStatus) => {
         raw: true
     });
 
+    const standardNotifications = notifications.map(notification => {
+        const sender = notification.sender;
+        const receiver = notification.receiver;
+        const standardSender = customizeUser.standardUser(sender);
+        const standardReceiver = customizeUser.standardUser(receiver);
+        notification.sender = standardSender;
+        notification.receiver = standardReceiver;
+        return notification;
+    })
+
     if (notifications)
         return {
             errCode: 0,
@@ -377,55 +388,59 @@ const findAllNotifications = async (userId, readStatus) => {
 }
 
 const findAllNotificationsNotRead = async (userId) => {
-    if (!userId) return {
-        errCode: 1,
-        message: 'User not found',
-        data: []
-    };
-    const notifications = await db.NotificationFriendShip.findAll({
-        where: {
-            receiverId: userId,
-            status: false
-        },
-        include: [
-            {
-                model: db.User,
-                as: 'sender',
-                attributes: ['id', 'userName', 'phoneNumber', 'avatar']
-            },
-            {
-                model: db.User,
-                as: 'receiver',
-                attributes: ['id', 'userName', 'phoneNumber', 'avatar']
-            },
-            {
-                model: db.FriendShip,
-                as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
-                foreignKey: 'senderId',
-                targetKey: 'user1Id',
-                where: {
-                    user1Id: { [Op.col]: 'NotificationFriendShip.senderId' },
-                    user2Id: userId,
-                    status: STATUS_FRIENDSHIP.PENDING
-                }
-            },
-        ],
-        nest: true,
-        raw: true
-    });
-
-    if (notifications)
-        return {
-            errCode: 0,
-            message: 'Find all notification success',
-            data: notifications
-        }
-    else
-        return {
+    try {
+        if (!userId) return {
             errCode: 1,
-            message: 'Not found',
+            message: 'User not found',
             data: []
-        }
+        };
+        const notifications = await db.NotificationFriendShip.findAll({
+            where: {
+                receiverId: userId,
+                status: false
+            },
+            include: [
+                {
+                    model: db.User,
+                    as: 'sender',
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                },
+                {
+                    model: db.User,
+                    as: 'receiver',
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                },
+                {
+                    model: db.FriendShip,
+                    as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
+                    foreignKey: 'senderId',
+                    targetKey: 'user1Id',
+                    where: {
+                        user1Id: { [Op.col]: 'NotificationFriendShip.senderId' },
+                        user2Id: userId,
+                        status: STATUS_FRIENDSHIP.PENDING
+                    }
+                },
+            ],
+            nest: true,
+            raw: true
+        });
+
+        if (notifications)
+            return {
+                errCode: 0,
+                message: 'Find all notification success',
+                data: notifications
+            }
+        else
+            return {
+                errCode: 1,
+                message: 'Not found',
+                data: []
+            }
+    } catch (error) {
+        throw error;
+    }
 }
 
 const updateReadStatusNofificationFriend = async (ids) => {
@@ -552,9 +567,15 @@ const updateUserInfor = async (newInfor) => {
         });
         if (user && userInfor) {
             // Update user attributes if data is provided
-            user.userName = userName;
-            userInfor.gender = gender;
-            userInfor.birthdate = new Date(birthdate);
+            if (userName) {
+                user.userName = userName;
+            }
+            if (gender !== null && gender !== undefined) {
+                userInfor.gender = gender;
+            }
+            if (birthdate) {
+                userInfor.birthdate = new Date(birthdate);
+            }
             // Save the updated user infor
             const userData = await user.save();
             const profileData = await userInfor.save();
