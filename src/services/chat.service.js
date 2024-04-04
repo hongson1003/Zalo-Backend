@@ -149,11 +149,14 @@ const sendMessage = async (data) => {
     }
 }
 
-const findManyMessagePagination = async (chatId, page, limit) => {
+const findManyMessagePagination = async (chatId, limit) => {
     try {
-        const offset = (page - 1) * limit;
+        const total = await Message.find({ chat: chatId }).countDocuments();
+        if (limit > total) {
+            limit = total;
+        }
         const messages = await Message.find({ chat: chatId }).populate('chat')
-            .skip(offset).limit(limit);
+            .skip(total - limit).limit(limit);
 
         const mapUsers = await CustomizeChat.getMapUserTargetId(messages.map(item => item.chat));
         let newMessages = messages.map(item => {
@@ -299,6 +302,19 @@ const clearReactions = async (_id) => {
     }
 }
 
+const getTotalMessages = async (chatId) => {
+    try {
+        const totalMessages = await Message.countDocuments({ chat: chatId });
+        return {
+            errCode: 0,
+            message: 'Get total messages successfully!',
+            data: totalMessages
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 module.exports = {
     accessChat,
@@ -310,5 +326,6 @@ module.exports = {
     findManyBackgroundPagination,
     setBackgroundForChat,
     addFeeling,
-    clearReactions
+    clearReactions,
+    getTotalMessages
 }

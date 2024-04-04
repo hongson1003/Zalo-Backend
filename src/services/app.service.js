@@ -157,7 +157,7 @@ const updateToken = async (refresh_token_old) => {
             userRaw.lastedOnline = null;
             await userRaw.save();
             return {
-                errCode: 0,
+                errCode: 100,
                 message: 'Refresh token success',
                 data: {
                     user: userClient,
@@ -167,11 +167,10 @@ const updateToken = async (refresh_token_old) => {
             }
         } else {
             return {
-                errCode: 2,
-                message: 'Fail, First, please register account',
+                errCode: 1,
+                message: 'Refresh token fail, Please check !',
             }
         }
-
     } catch (error) {
         throw error;
     }

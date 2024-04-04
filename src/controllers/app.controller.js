@@ -79,7 +79,7 @@ const check = async (req, res, next) => {
         if (error instanceof TokenExpiredError) {
             // refresh token
             const rs = await appService.updateToken(refresh_token);
-            if (rs.errCode === 0) {
+            if (rs.errCode === 100) {
                 res.cookie('access_token', rs.data.access_token, { httpOnly: true, maxAge: +MAX_AGE * 60000 });
                 res.cookie('refresh_token', rs.data.refresh_token, { httpOnly: true, maxAge: +MAX_AGE * 60000 });
             }

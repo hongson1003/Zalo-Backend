@@ -26,16 +26,27 @@ const checkJWT = async (req, res, next) => {
             })
         }
     } catch (error) {
+        // if (error instanceof TokenExpiredError) {
+        //     // refresh token
+        //     const rs = await appService.updateToken(refresh_token);
+        //     if (rs.errCode === 100) {
+        //         res.cookie('access_token', rs.data.access_token, { httpOnly: true, maxAge: +process.env.MAX_AGE * 60000 });
+        //         res.cookie('refresh_token', rs.data.refresh_token, { httpOnly: true, maxAge: +process.env.MAX_AGE * 60000 });
+        //     }
+        //     return res.status(200).json(rs);
+        // }
+        // next();
         if (error instanceof TokenExpiredError) {
-            // refresh token
-            const rs = await appService.updateToken(refresh_token);
-            if (rs.errCode === 0) {
-                res.cookie('access_token', rs.data.access_token, { httpOnly: true, maxAge: +process.env.MAX_AGE * 60000 });
-                res.cookie('refresh_token', rs.data.refresh_token, { httpOnly: true, maxAge: +process.env.MAX_AGE * 60000 });
-            }
-            return res.status(200).json(rs);
+            return res.status(401).json({
+                errCode: 401,
+                message: 'Token expired'
+            })
+        } else {
+            return res.status(401).json({
+                errCode: 401,
+                message: 'Not authorization token'
+            })
         }
-        next();
     }
 }
 

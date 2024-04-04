@@ -96,9 +96,8 @@ const sendMessage = async (req, res, next) => {
 const findManyMessagePagination = async (req, res, next) => {
     try {
         const chatId = req.query.chatId;
-        const page = +req.query.page;
         const limit = +req.query.limit;
-        if (!chatId || !page || !limit) {
+        if (!chatId || !limit) {
             return res.status(400).json(
                 {
                     errCode: -1,
@@ -106,7 +105,7 @@ const findManyMessagePagination = async (req, res, next) => {
                 }
             );
         }
-        const response = await chatService.findManyMessagePagination(chatId, page, limit);
+        const response = await chatService.findManyMessagePagination(chatId, limit);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -173,6 +172,17 @@ const clearReactions = async (req, res, next) => {
     }
 }
 
+const getTotalMessages = async (req, res, next) => {
+    try {
+        const { chatId } = req.query;
+        const response = await chatService.getTotalMessages(chatId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
 
 
 module.exports = {
@@ -186,4 +196,5 @@ module.exports = {
     setBackgroundForChat,
     addFeeling,
     clearReactions,
+    getTotalMessages
 }

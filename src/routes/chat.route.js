@@ -25,7 +25,8 @@ const InitRoutesChat = (router) => {
     router.route('/feeling', userMiddleware.checkJWT)
         .post(chatController.addFeeling)
         .put(chatController.clearReactions)
-
+    router.route('/messages/total', userMiddleware.checkJWT)
+        .get(chatController.getTotalMessages)
 
     return router;
 }
