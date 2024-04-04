@@ -315,6 +315,34 @@ const getTotalMessages = async (chatId) => {
     }
 }
 
+const recallMessage = async (_id) => {
+        try {
+            const message = await Message.findById(_id);
+            if (!message) {
+                return {
+                    errCode: -1,
+                    message: 'Message not found!',
+                    data: {}
+                }
+            }
+            message.status= false;
+            const result = await message.save();
+            if (result) {
+                return {
+                    errCode: 0,
+                    message: 'Recall message successfully!',
+                    data: result
+                }
+            }
+            return {
+                errCode: -1,
+                message: 'Recall message message failed!',
+                data: {}
+            }
+        } catch (error) {
+            throw error;
+        }
+}
 
 module.exports = {
     accessChat,
@@ -327,5 +355,6 @@ module.exports = {
     setBackgroundForChat,
     addFeeling,
     clearReactions,
-    getTotalMessages
+    getTotalMessages,
+    recallMessage
 }

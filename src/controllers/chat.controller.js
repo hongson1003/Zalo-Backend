@@ -183,6 +183,19 @@ const getTotalMessages = async (req, res, next) => {
 
 }
 
+const recallMessage = async (req, res, next) => {
+    try {
+        const messageId = req.body.messageId;
+        if (!messageId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: recall ID' });
+        }
+        const response = await chatService.recallMessage(messageId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 module.exports = {
@@ -196,5 +209,6 @@ module.exports = {
     setBackgroundForChat,
     addFeeling,
     clearReactions,
-    getTotalMessages
+    getTotalMessages,
+    recallMessage
 }

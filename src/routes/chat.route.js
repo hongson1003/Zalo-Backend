@@ -27,7 +27,8 @@ const InitRoutesChat = (router) => {
         .put(chatController.clearReactions)
     router.route('/messages/total', userMiddleware.checkJWT)
         .get(chatController.getTotalMessages)
-
+    router.route('/message/recall')
+        .put(userMiddleware.checkJWT, chatController.recallMessage)
     return router;
 }
 
