@@ -48,18 +48,21 @@ const findUserWithProfileById = async (req, res, next) => {
 }
 
 const sendRequestAddFriend = async (req, res, next) => {
-    const { userId, content } = req.body;
-    const user = req.user;
-    if (!user.id || !userId) {
-        return res.status(200).json({
-            errCode: 1,
-            message: 'Missing required parameter'
-        })
-    }
-    let response = await userService.sendRequestAddFriend(user.id, userId, content);
-    if (response)
+    try {
+        const { userId, content } = req.body;
+        const user = req.user;
+        if (!user.id || !userId) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.sendRequestAddFriend(user.id, userId, content);
         return res.status(200).json(response);
-    next();
+    } catch (error) {
+        next(error);
+
+    }
 }
 
 const findFriendShip = async (req, res, next) => {

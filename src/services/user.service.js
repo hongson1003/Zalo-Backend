@@ -179,7 +179,7 @@ const sendRequestAddFriend = async (user1Id, user2Id, content) => {
             message: 'Send request failed'
         }
     } catch (error) {
-        throw new error;
+        throw error;
     }
 
 }
