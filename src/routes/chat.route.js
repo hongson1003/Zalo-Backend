@@ -29,6 +29,10 @@ const InitRoutesChat = (router) => {
         .get(chatController.getTotalMessages)
     router.route('/message/recall')
         .put(userMiddleware.checkJWT, chatController.recallMessage)
+    router.route('/message/deleteMessage')
+        .put(userMiddleware.checkJWT, chatController.deleteMessage)
+    router.route('/message/pinMessage')
+        .put(userMiddleware.checkJWT, chatController.pinMessage)
     return router;
 }
 

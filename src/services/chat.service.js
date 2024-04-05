@@ -344,6 +344,72 @@ const recallMessage = async (_id) => {
         }
 }
 
+const deleteMessage = async(messageId, id) => {
+    try {
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return {
+                errCode: -1,
+                message: 'Message not found!',
+                data: {}
+            }
+        }
+        //Check user who delete === user send this message
+        if(!(message.sender===id)){
+            return {
+                errCode: 0,
+                message: 'Cannot delete message because this user is not its sender',
+                data: result
+            }
+        }
+        message.isDelete= true;
+        const result = await message.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Recall message successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Recall message message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const pinMessage = async(messageId) => {
+    try {
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return {
+                errCode: -1,
+                message: 'Message not found!',
+                data: {}
+            }
+        }
+        message.isPin= true;
+        const result = await message.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Recall message successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Recall message message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -356,5 +422,7 @@ module.exports = {
     addFeeling,
     clearReactions,
     getTotalMessages,
-    recallMessage
+    recallMessage,
+    deleteMessage,
+    pinMessage
 }

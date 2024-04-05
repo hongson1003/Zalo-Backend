@@ -196,6 +196,32 @@ const recallMessage = async (req, res, next) => {
     }
 }
 
+const deleteMessage = async (req, res, next) => {
+    try {
+        const [messageId, id] = req.body; 
+        if (!messageId || !id) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: message ID or user ID' });
+        }
+        const response = await chatService.deleteMessage(messageId, id);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const pinMessage = async (req, res, next) => {
+    try {
+        const messageId = req.body.messageId; 
+        if (!messageId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: message ID' });
+        }
+        const response = await chatService.pinMessage(messageId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 module.exports = {
@@ -210,5 +236,7 @@ module.exports = {
     addFeeling,
     clearReactions,
     getTotalMessages,
-    recallMessage
+    recallMessage,
+    deleteMessage,
+    pinMessage
 }

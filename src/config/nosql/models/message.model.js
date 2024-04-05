@@ -38,7 +38,9 @@ const MessageModel = Schema({
         ],
         default: [],
     },
-    status: Boolean
+    status: Boolean,
+    isDelete: Boolean,
+    isPin: Boolean
 }, {
     timestamps: true,
 }

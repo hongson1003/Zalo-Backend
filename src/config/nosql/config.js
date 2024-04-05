@@ -5,7 +5,6 @@ const username = encodeURIComponent(process.env.MONGOOSE_HOST);
 const password = encodeURIComponent(process.env.MONGOOSE_PASSWORD);
 
 const uri = `mongodb+srv://${username}:${password}@cluster0.z1rlzqm.mongodb.net/zalo?retryWrites=true&w=majority`;
-//const uri = `mongodb+srv://tranminhthuan030302:SXiAwJ9QczldWNEp@cluster0.8qhe7rc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 
 async function connectNoSql() {
