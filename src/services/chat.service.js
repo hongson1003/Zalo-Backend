@@ -98,7 +98,7 @@ const findManyChatPagination = async (userId, page, limit) => {
             }
         }
         return {
-            errCode: -1,
+            errCode: 1,
             message: 'Chats not found!',
             data: []
         }
@@ -325,7 +325,7 @@ const recallMessage = async (_id, userId) => {
                 data: {}
             }
         }
-        message.unViewList = message.unViewList.push(userId);
+        message.unViewList.push(userId);
         const result = await message.save();
         const data = await result.populate('chat');
         const mapUsers = await CustomizeChat.getMapUserTargetId([data.chat]);
