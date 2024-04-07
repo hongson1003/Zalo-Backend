@@ -32,9 +32,9 @@ io.on('connection', function (socket) {
   });
 
 
-  socket.on('join-chat', (room) => {
+  socket.on('join-room', (room) => {
     socket.join(room);
-    socket.emit('joined-chat', room);
+    socket.emit('joined-room', room);
   })
 
   socket.on('send-add-friend', (data) => {
@@ -54,19 +54,26 @@ io.on('connection', function (socket) {
   })
 
   socket.on('send-reaction', (data) => {
-    console.log('đã nhận', data);
     socket.in(data.chat).emit('receive-reaction', data);
   })
 
   socket.on('modify-message', (data) => {
-    console.log('đã nhận', data)
     socket.in(data.chat._id).emit('receive-modify-message', data);
   });
+
+  socket.on('online', data => {
+    socket.in(data).emit('online', data);
+  })
+
+  socket.on('offline', data => {
+    socket.in(data).emit('offline', data);
+  })
 
 
   socket.on("disconnect", (reason) => {
     // else the socket will automatically try to reconnect
   });
+
 
 
 });

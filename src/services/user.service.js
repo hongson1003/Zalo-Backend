@@ -83,18 +83,22 @@ const newInfoContact = async (info) => {
 }
 
 const getProfileByUserId = async (userId) => {
-    const data = await db.ProfileContact.findOne({
-        where: {
-            userId
-        },
-        attributes: {
-            exclude: ['userInfoId']
-        },
-    });
-    return {
-        errCode: 0,
-        message: 'Get success',
-        data: customizeUser.standardProfile(data)
+    try {
+        const data = await db.ProfileContact.findOne({
+            where: {
+                userId
+            },
+            attributes: {
+                exclude: ['userInfoId']
+            },
+        });
+        return {
+            errCode: 0,
+            message: 'Get success',
+            data: customizeUser.standardProfile(data)
+        }
+    } catch (error) {
+        throw error;
     }
 
 }
@@ -206,12 +210,12 @@ const findFriendShip = async (user1Id, user2Id) => {
                 {
                     model: db.User,
                     as: 'user1',
-                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 },
                 {
                     model: db.User,
                     as: 'user2',
-                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 }
             ],
             nest: true,
@@ -229,7 +233,7 @@ const findFriendShip = async (user1Id, user2Id) => {
             message: 'Not found'
         }
     } catch (error) {
-        throw new Error(error);
+        throw new error;
     }
 }
 
@@ -551,7 +555,7 @@ const findFriendsPagination = async (userId, page, limit) => {
 }
 
 const getMany = async (ids) => {
-    const attributes = ['id', 'userName', 'phoneNumber', 'avatar'];
+    const attributes = ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline'];
     try {
         const users = await db.User.findAll({
             where: {
@@ -644,7 +648,7 @@ const updateAvatar = async (userId, avatar) => {
     }
 }
 
-const updateOnline = async (userId) => {
+const updateOnline = async (userId, time) => {
     try {
         const user = await db.User.findOne({
             where: {
@@ -653,7 +657,7 @@ const updateOnline = async (userId) => {
             raw: false
         });
         if (user) {
-            user.lastedOnline = new Date();
+            user.lastedOnline = time;
             await user.save();
             return {
                 errCode: 0,

@@ -34,10 +34,12 @@ const createInfoContact = async (req, res, next) => {
 }
 
 const getProfileByUserId = async (req, res, next) => {
-    const response = await userService.getProfileByUserId(req.query.userId);
-    if (response)
+    try {
+        const response = await userService.getProfileByUserId(req.query.userId);
         return res.status(200).json(response);
-    next();
+    } catch (error) {
+        next(error);
+    }
 }
 
 const findUserWithProfileById = async (req, res, next) => {
@@ -66,18 +68,20 @@ const sendRequestAddFriend = async (req, res, next) => {
 }
 
 const findFriendShip = async (req, res, next) => {
-    const { userId } = req.query;
-    const user = req.user;
-    if (!user?.id || !userId) {
-        return res.status(200).json({
-            errCode: 1,
-            message: 'Missing required parameter'
-        })
-    }
-    let response = await userService.findFriendShip(user?.id, userId);
-    if (response)
+    try {
+        const { userId } = req.query;
+        const user = req.user;
+        if (!user?.id || !userId) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.findFriendShip(user?.id, userId);
         return res.status(200).json(response);
-    next();
+    } catch (error) {
+        next(error);
+    }
 }
 
 const acceptRequestAddFriend = async (req, res, next) => {
@@ -261,13 +265,14 @@ const updateAvatar = async (req, res, next) => {
 const updateOnline = async (req, res, next) => {
     try {
         const userId = req.user.id;
+        const time = req.body.time;
         if (!userId) {
             return res.status(200).json({
                 errCode: 1,
                 message: 'Missing required parameter'
             })
         }
-        let response = await userService.updateOnline(userId);
+        let response = await userService.updateOnline(userId, time);
         return res.status(200).json(response);
     } catch (error) {
         next(error);

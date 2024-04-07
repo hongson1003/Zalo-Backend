@@ -46,9 +46,11 @@ const IntRoutesUsers = (router) => {
         .put(userController.updateUserInfor)
 
     router.route('/avatar')
-        .put(userMiddleware.checkJWT, userController.updateAvatar)
+        .put(userMiddleware.checkJWT,
+            userController.updateAvatar)
     router.route('/updateOnline')
-        .put(userController.updateOnline)
+        .put(userMiddleware.checkJWT,
+            userController.updateOnline)
 
     return router;
 }
