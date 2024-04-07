@@ -315,38 +315,9 @@ const getTotalMessages = async (chatId) => {
     }
 }
 
-const recallMessage = async (_id) => {
-        try {
-            const message = await Message.findById(_id);
-            if (!message) {
-                return {
-                    errCode: -1,
-                    message: 'Message not found!',
-                    data: {}
-                }
-            }
-            message.status= false;
-            const result = await message.save();
-            if (result) {
-                return {
-                    errCode: 0,
-                    message: 'Recall message successfully!',
-                    data: result
-                }
-            }
-            return {
-                errCode: -1,
-                message: 'Recall message message failed!',
-                data: {}
-            }
-        } catch (error) {
-            throw error;
-        }
-}
-
-const deleteMessage = async(messageId, id) => {
+const recallMessage = async (_id, userId) => {
     try {
-        const message = await Message.findById(messageId);
+        const message = await Message.findById(_id);
         if (!message) {
             return {
                 errCode: -1,
@@ -354,21 +325,17 @@ const deleteMessage = async(messageId, id) => {
                 data: {}
             }
         }
-        //Check user who delete === user send this message
-        if(!(message.sender===id)){
-            return {
-                errCode: 0,
-                message: 'Cannot delete message because this user is not its sender',
-                data: result
-            }
-        }
-        message.isDelete= true;
+        message.unViewList = message.unViewList.push(userId);
         const result = await message.save();
+        const data = await result.populate('chat');
+        const mapUsers = await CustomizeChat.getMapUserTargetId([data.chat]);
+        const newMessage = { ...data.toObject() };
+        newMessage.sender = mapUsers[String(data.sender)];
         if (result) {
             return {
                 errCode: 0,
                 message: 'Recall message successfully!',
-                data: result
+                data: newMessage
             }
         }
         return {
@@ -381,7 +348,7 @@ const deleteMessage = async(messageId, id) => {
     }
 }
 
-const pinMessage = async(messageId) => {
+const deleteMessage = async (messageId, id) => {
     try {
         const message = await Message.findById(messageId);
         if (!message) {
@@ -391,7 +358,48 @@ const pinMessage = async(messageId) => {
                 data: {}
             }
         }
-        message.isPin= true;
+        //Check user who delete === user send this message
+        if (!(message.sender === id)) {
+            return {
+                errCode: 0,
+                message: 'Cannot delete message because this user is not its sender',
+                data: result
+            }
+        }
+        message.isDelete = true;
+        const result = await message.save();
+        const data = await result.populate('chat');
+        const mapUsers = await CustomizeChat.getMapUserTargetId([data.chat]);
+        const newMessage = { ...data.toObject() };
+        newMessage.sender = mapUsers[String(data.sender)];
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Recall message successfully!',
+                data: newMessage
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Recall message message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const pinMessage = async (messageId) => {
+    try {
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return {
+                errCode: -1,
+                message: 'Message not found!',
+                data: {}
+            }
+        }
+        message.isPin = true;
         const result = await message.save();
         if (result) {
             return {

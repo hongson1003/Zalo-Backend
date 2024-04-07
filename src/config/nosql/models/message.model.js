@@ -19,7 +19,7 @@ const MessageModel = Schema({
         required: false,
         default: null
     }],
-    images: [{
+    urls: [{
         type: String,
         required: false,
         default: null
@@ -38,8 +38,14 @@ const MessageModel = Schema({
         ],
         default: [],
     },
-    status: Boolean,
-    isDelete: Boolean,
+    unViewList: {
+        type: [Number],
+        default: []
+    },
+    isDelete: {
+        type: Boolean,
+        default: false,
+    },
     isPin: Boolean
 }, {
     timestamps: true,

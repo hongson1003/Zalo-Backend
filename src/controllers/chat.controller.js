@@ -185,11 +185,12 @@ const getTotalMessages = async (req, res, next) => {
 
 const recallMessage = async (req, res, next) => {
     try {
-        const messageId = req.body.messageId;
+        const { messageId } = req.body;
+        const userId = req.user.id;
         if (!messageId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: recall ID' });
         }
-        const response = await chatService.recallMessage(messageId);
+        const response = await chatService.recallMessage(messageId, userId);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -198,7 +199,8 @@ const recallMessage = async (req, res, next) => {
 
 const deleteMessage = async (req, res, next) => {
     try {
-        const [messageId, id] = req.body; 
+        const { messageId } = req.body;
+        const id = req.user.id;
         if (!messageId || !id) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: message ID or user ID' });
         }
@@ -211,7 +213,7 @@ const deleteMessage = async (req, res, next) => {
 
 const pinMessage = async (req, res, next) => {
     try {
-        const messageId = req.body.messageId; 
+        const messageId = req.body.messageId;
         if (!messageId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: message ID' });
         }

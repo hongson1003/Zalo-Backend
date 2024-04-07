@@ -53,6 +53,16 @@ io.on('connection', function (socket) {
     socket.in(room).emit('finish-typing');
   })
 
+  socket.on('send-reaction', (data) => {
+    console.log('đã nhận', data);
+    socket.in(data.chat).emit('receive-reaction', data);
+  })
+
+  socket.on('modify-message', (data) => {
+    console.log('đã nhận', data)
+    socket.in(data.chat._id).emit('receive-modify-message', data);
+  });
+
 
   socket.on("disconnect", (reason) => {
     // else the socket will automatically try to reconnect
