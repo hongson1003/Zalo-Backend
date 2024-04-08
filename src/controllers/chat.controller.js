@@ -90,7 +90,6 @@ const sendMessage = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-
 }
 
 const findManyMessagePagination = async (req, res, next) => {
@@ -224,6 +223,19 @@ const pinMessage = async (req, res, next) => {
     }
 }
 
+const unPinMessage = async (req, res, next) => {
+    try {
+        const messageId = req.body.messageId;
+        if (!messageId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: message ID' });
+        }
+        const response = await chatService.unPinMessage(messageId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 module.exports = {
@@ -240,5 +252,6 @@ module.exports = {
     getTotalMessages,
     recallMessage,
     deleteMessage,
-    pinMessage
+    pinMessage,
+    unPinMessage
 }

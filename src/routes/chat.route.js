@@ -32,7 +32,10 @@ const InitRoutesChat = (router) => {
     router.route('/message/deleteMessage')
         .put(userMiddleware.checkJWT, chatController.deleteMessage)
     router.route('/message/pinMessage')
-        .put(userMiddleware.checkJWT, chatController.pinMessage)
+        .put(userMiddleware.checkJWT, chatController.pinMessage);
+    router.route('/message/unPinMessage')
+        .put(userMiddleware.checkJWT, chatController.unPinMessage);
+
     return router;
 }
 

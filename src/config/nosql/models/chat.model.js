@@ -14,19 +14,15 @@ const ChatModel = Schema({
     }],
     groupPhoto: String,
     lastedMessage: {
-        type: {
-            users: [{
-                type: Number,
-                require: true
-            }],
-            id: {
-                type: Schema.Types.ObjectId,
-                require: true,
-                ref: "Message"
-            }
-        },
-        require: false
+        type: Schema.Types.ObjectId,
+        require: false,
+        ref: "Message",
+        default: null,
     },
+    seenBy: [{
+        type: Number,
+        require: false
+    }],
     pinnedMessages: {
         type: Schema.Types.ObjectId,
         ref: "Message",

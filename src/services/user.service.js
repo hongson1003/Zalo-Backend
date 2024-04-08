@@ -178,9 +178,12 @@ const sendRequestAddFriend = async (user1Id, user2Id, content) => {
                 data: friendShipOne
             }
         }
+        // đang chuẩn bị thu hồi
+        friendShipOne.status = STATUS_FRIENDSHIP.REJECT;
+        await friendShipOne.save();
         return {
             errCode: 3,
-            message: 'Send request failed'
+            message: 'Thu hồi tin nhắn success'
         }
     } catch (error) {
         throw error;

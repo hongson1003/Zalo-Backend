@@ -24,12 +24,12 @@ module.exports = (sequelize, DataTypes) => {
             // friendShip
             NotificationFriendShip.belongsTo(models.FriendShip, {
                 foreignKey: 'senderId',
-                targetKey: 'user1Id'
+                targetKey: 'user1Id',
             });
 
             NotificationFriendShip.belongsTo(models.FriendShip, {
                 foreignKey: 'receiverId',
-                targetKey: 'user2Id'
+                targetKey: 'user2Id',
             });
 
         }

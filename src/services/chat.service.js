@@ -87,7 +87,13 @@ const findManyChatPagination = async (userId, page, limit) => {
             }
         }).skip(offset)
             .limit(limit)
-            .populate('background');
+            .populate('background')
+            .populate({
+                path: 'lastedMessage', // Tham chiếu trường 'id' lồng nhau
+                model: 'Message' // Tham chiếu Message model để lấy dữ liệu
+            })
+            .sort({ updatedAt: -1 });
+
         const mapUsers = await CustomizeChat.getMapUserTargetId(chats);
         const newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
         if (chats.length > 0) {
@@ -130,13 +136,20 @@ const createGroupChat = async (data) => {
 
 const sendMessage = async (data) => {
     try {
+        // insert into messages
         const message = new Message(data);
         const result = await message.save();
+        // update lasted messsage for chat
+        const chat = await Chat.findById(data.chat);
+        chat.lastedMessage = result;
+        await chat.save();
+        const newMessage = await result.populate('chat');
+
         if (result) {
             return {
                 errCode: 0,
                 message: 'Send message successfully!',
-                data: result
+                data: newMessage
             }
         }
         return {
@@ -391,6 +404,16 @@ const deleteMessage = async (messageId, id) => {
 
 const pinMessage = async (messageId) => {
     try {
+        // Check message no larger then 3 
+        const totalPinMessages = await Message.countDocuments({ isPin: true });
+        if (totalPinMessages >= 3) {
+            return {
+                errCode: -1,
+                message: 'Cannot pin more than 3 messages!',
+                data: {}
+            }
+        }
+        // Check message exist
         const message = await Message.findById(messageId);
         if (!message) {
             return {
@@ -401,11 +424,16 @@ const pinMessage = async (messageId) => {
         }
         message.isPin = true;
         const result = await message.save();
+
+        const newMessage = await result.populate('chat');
+        const mapUsers = await CustomizeChat.getMapUserTargetId([newMessage.chat]);
+        newMessage.sender = mapUsers[String(newMessage.sender)];
+
         if (result) {
             return {
                 errCode: 0,
                 message: 'Recall message successfully!',
-                data: result
+                data: newMessage
             }
         }
         return {
@@ -417,6 +445,43 @@ const pinMessage = async (messageId) => {
         throw error;
     }
 }
+
+const unPinMessage = async (messageId) => {
+    try {
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return {
+                errCode: -1,
+                message: 'Message not found!',
+                data: {}
+            }
+        }
+        message.isPin = false;
+        const result = await message.save();
+
+        const newMessage = await result.populate('chat');
+        const mapUsers = await CustomizeChat.getMapUserTargetId([newMessage.chat]);
+        newMessage.sender = mapUsers[String(newMessage.sender)];
+
+
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Recall message successfully!',
+                data: newMessage
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Recall message message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+
 
 module.exports = {
     accessChat,
@@ -432,5 +497,6 @@ module.exports = {
     getTotalMessages,
     recallMessage,
     deleteMessage,
-    pinMessage
+    pinMessage,
+    unPinMessage
 }
