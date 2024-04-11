@@ -65,7 +65,9 @@ const findManyChatPagination = async (req, res, next) => {
 const createGroupChat = async (req, res, next) => {
     try {
         const data = req.body;
-        data.participants.push(req.user.id);
+        const id = req.user.id;
+        data.participants.push(id);
+        data.administrator = id;
         if (!data || Object.keys(data).length == 0 || !data.name || data.participants.length < 2) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
@@ -293,6 +295,20 @@ const grantGroupLeader = async (req, res, next) => {
     }
 }
 
+const updateGroupChat = async (req, res, next) => {
+    try {
+        const data = req.body;
+        if (!data || Object.keys(data).length == 0) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.updateGroupChat(data);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
 
 
 module.exports = {
@@ -313,5 +329,6 @@ module.exports = {
     unPinMessage,
     addMember,
     deleteMember,
-    grantGroupLeader
+    grantGroupLeader,
+    updateGroupChat
 }

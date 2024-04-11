@@ -19,6 +19,10 @@ const ChatModel = Schema({
         ref: "Message",
         default: null,
     },
+    administrator: {
+        type: Number,
+        require: false,
+    },
     seenBy: [{
         type: Number,
         require: false
