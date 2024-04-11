@@ -43,7 +43,7 @@ const InitRoutesChat = (router) => {
     router.route('/message/grantGroupLeader')
         .put(userMiddleware.checkJWT, chatController.grantGroupLeader);
     router.route('/message/getListGroupMember')
-        .put(userMiddleware.checkJWT, chatController.getListGroupMember);
+        .get(userMiddleware.checkJWT, chatController.getListGroupMember);
 
     return router;
 }
