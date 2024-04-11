@@ -65,7 +65,8 @@ const findManyChatPagination = async (req, res, next) => {
 const createGroupChat = async (req, res, next) => {
     try {
         const data = req.body;
-        data.participants.push(req.user.id);
+        const id = req.user.id;
+        data.participants.push(id);
         if (!data || Object.keys(data).length == 0 || !data.name || data.participants.length < 2) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
