@@ -143,13 +143,13 @@ const sendMessage = async (data) => {
         const chat = await Chat.findById(data.chat);
         chat.lastedMessage = result;
         await chat.save();
-        const newMessage = await result.populate('chat');
+        // const newMessage = await result.populate('chat');
 
         if (result) {
             return {
                 errCode: 0,
                 message: 'Send message successfully!',
-                data: newMessage
+                data: result
             }
         }
         return {
@@ -269,11 +269,15 @@ const addFeeling = async (_id, userId, icon) => {
             message.reactions.push({ userId, icon });
         }
         const result = await message.save();
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result.chat]);
+        const newMessage = { ...result.toObject() };
+        newMessage.sender = mapUsers[String(result.sender)];
+
         if (result) {
             return {
                 errCode: 0,
                 message: 'Add feeling for message successfully!',
-                data: result
+                data: newMessage
             }
         }
         return {
@@ -402,10 +406,13 @@ const deleteMessage = async (messageId, id) => {
     }
 }
 
-const pinMessage = async (messageId) => {
+const pinMessage = async (messageId, chatId) => {
     try {
         // Check message no larger then 3 
-        const totalPinMessages = await Message.countDocuments({ isPin: true });
+        const totalPinMessages = await Message.countDocuments({
+            isPin: true,
+            chat: chatId
+        });
         if (totalPinMessages >= 3) {
             return {
                 errCode: -1,

@@ -23,11 +23,6 @@ const ChatModel = Schema({
         type: Number,
         require: false
     }],
-    pinnedMessages: {
-        type: Schema.Types.ObjectId,
-        ref: "Message",
-        require: false
-    },
     background: {
         type: Schema.Types.ObjectId,
         ref: "Background",

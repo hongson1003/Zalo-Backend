@@ -1,7 +1,7 @@
 import colors from 'colors';
 import app from './app';
 require('dotenv').config();
-
+import userService from './src/services/user.service';
 app.set('port', process.env.PORT || 7777);
 
 const server = app.listen(app.get('port'), () => {
@@ -65,10 +65,10 @@ io.on('connection', function (socket) {
     socket.in(data).emit('online', data);
   })
 
-  socket.on('offline', data => {
+  socket.on('offline', async data => {
+    await userService.updateOnline(data, new Date());
     socket.in(data).emit('offline', data);
   })
-
 
   socket.on("disconnect", (reason) => {
     // else the socket will automatically try to reconnect

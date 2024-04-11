@@ -1,4 +1,5 @@
 require('dotenv').config();
+const colors = require('colors');
 
 const mongoose = require('mongoose');
 const username = encodeURIComponent(process.env.MONGOOSE_HOST);
