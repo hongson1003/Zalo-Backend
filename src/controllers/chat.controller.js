@@ -238,42 +238,56 @@ const unPinMessage = async (req, res, next) => {
 
 const addMember = async (req, res, next) => {
     try {
-        const memberId = req.body.memberId;
-        const chatId = req.body.chatId;
-        const id = req.user.id;
-        if (!memberId || !id || chatId) {
-            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
+        const { memberId, chatId } = req.body;
+        const userId = req.user.id;
+
+        if (!memberId || !chatId || !userId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID, or user ID' });
         }
-        const response = await chatService.addMember(memberId, chatId ,id);
-        return res.status(200).json(response);
+        const response = await chatService.addMember(memberId, chatId, userId);
+        if (response) {
+            return res.status(200).json(response);
+        } else {
+            return res.status(400).json({ errCode: -2, message: 'Failed to add member' });
+        }
     } catch (error) {
         next(error);
     }
 }
+
 const deleteMember = async (req, res, next) => {
     try {
-        const memberId = req.body.memberId;
-        const chatId = req.body.chatId;
-        const id = req.user.id;
-        if (!memberId || !id || chatId) {
-            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
+        const { memberId, chatId } = req.body;
+        const userId = req.user.id;
+
+        if (!memberId || !chatId || !userId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID, or user ID' });
         }
-        const response = await chatService.deleteMember(memberId, chatId ,id);
-        return res.status(200).json(response);
+        const response = await chatService.deleteMember(memberId, chatId, userId);
+        if (response) {
+            return res.status(200).json(response);
+        } else {
+            return res.status(400).json({ errCode: -2, message: 'Failed to delete member' });
+        }
     } catch (error) {
         next(error);
     }
 }
+
 const grantGroupLeader = async (req, res, next) => {
     try {
         const memberId = req.body.memberId;
         const chatId = req.body.chatId;
-        const id = req.user.id;
-        if (!memberId || !id || chatId) {
-            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
+        const userId = req.user.id;
+        if (!memberId || !userId || !chatId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID, or user ID' });
         }
-        const response = await chatService.grantGroupLeader(memberId, chatId ,id);
-        return res.status(200).json(response);
+        const response = await chatService.grantGroupLeader(memberId, chatId, userId);
+        if (response.errCode === 0) {
+            return res.status(200).json(response);
+        } else {
+            return res.status(400).json(response);
+        }
     } catch (error) {
         next(error);
     }

@@ -586,6 +586,7 @@ const deleteMember = async (memberId, chatId, id) => {
         throw error;
     }
 }
+
 const grantGroupLeader = async (memberId, chatId, id) => {
     //Gán quyền trưởng nhóm cho thành viên khác
     try {
