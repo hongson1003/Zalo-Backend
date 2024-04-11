@@ -488,6 +488,154 @@ const unPinMessage = async (messageId) => {
     }
 }
 
+const addMember = async (memberId, chatId, id) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if(!chat.type==="GROUP_CHAT"){
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        } 
+
+        if(!chat.participants[chat.participants.length - 1]===id){
+            return {
+                errCode: 1,
+                message: 'This user is not group leader!',
+                data: {}
+            }
+        }
+        const groupLeader = chat.participants[chat.participants.length - 1];
+        const index = chat.participants.indexOf(groupLeader);
+        if (index !== -1) {
+            chat.participants.splice(index, 1);
+        }
+
+        chat.participants.push(memberId);
+        chat.participants.push(groupLeader);
+        const result = await chat.save();
+
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Add member successfully!',
+                data: chat.participants
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Add member failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+const deleteMember = async (memberId, chatId, id) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if(!chat.type==="GROUP_CHAT"){
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        } 
+
+        if(!chat.participants[chat.participants.length - 1]===id){
+            return {
+                errCode: 1,
+                message: 'This user is not group leader!',
+                data: {}
+            }
+        }
+        const index = chat.participants.indexOf(memberId);
+        if (index !== -1) {
+            chat.participants.splice(index, 1);
+        }
+        const result = await chat.save();
+
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Delete member successfully!',
+                data: chat.participants
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Delete member failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+const grantGroupLeader = async (memberId, chatId, id) => {
+    //Gán quyền trưởng nhóm cho thành viên khác
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if(!chat.type==="GROUP_CHAT"){
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        } 
+
+        if(!chat.participants[chat.participants.length - 1]===id){
+            return {
+                errCode: 1,
+                message: 'This user is not group leader!',
+                data: {}
+            }
+        }
+        const newGroupLeader= memberId;
+        const index = chat.participants.indexOf(memberId);
+        if (index !== -1) {
+            chat.participants.splice(index, 1);
+        }
+        chat.participants.push(newGroupLeader);
+        const result = await chat.save();
+
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Grant group leader successfully!',
+                data: chat.participants
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Grant group leader failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
 
 
 module.exports = {
@@ -505,5 +653,8 @@ module.exports = {
     recallMessage,
     deleteMessage,
     pinMessage,
-    unPinMessage
+    unPinMessage,
+    addMember,
+    deleteMember,
+    grantGroupLeader
 }

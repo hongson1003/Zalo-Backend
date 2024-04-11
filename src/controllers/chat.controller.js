@@ -236,6 +236,49 @@ const unPinMessage = async (req, res, next) => {
     }
 }
 
+const addMember = async (req, res, next) => {
+    try {
+        const memberId = req.body.memberId;
+        const chatId = req.body.chatId;
+        const id = req.user.id;
+        if (!memberId || !id || chatId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
+        }
+        const response = await chatService.addMember(memberId, chatId ,id);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+const deleteMember = async (req, res, next) => {
+    try {
+        const memberId = req.body.memberId;
+        const chatId = req.body.chatId;
+        const id = req.user.id;
+        if (!memberId || !id || chatId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
+        }
+        const response = await chatService.deleteMember(memberId, chatId ,id);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+const grantGroupLeader = async (req, res, next) => {
+    try {
+        const memberId = req.body.memberId;
+        const chatId = req.body.chatId;
+        const id = req.user.id;
+        if (!memberId || !id || chatId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
+        }
+        const response = await chatService.grantGroupLeader(memberId, chatId ,id);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 
 module.exports = {
@@ -253,5 +296,8 @@ module.exports = {
     recallMessage,
     deleteMessage,
     pinMessage,
-    unPinMessage
+    unPinMessage,
+    addMember,
+    deleteMember,
+    grantGroupLeader
 }
