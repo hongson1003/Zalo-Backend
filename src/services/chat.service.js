@@ -117,11 +117,14 @@ const createGroupChat = async (data) => {
     try {
         const chat = new Chat(data);
         const result = await chat.save();
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
+
         if (result) {
             return {
                 errCode: 0,
                 message: 'Create chat successfully!',
-                data: result
+                data: newChats
             }
         }
         return {
@@ -498,15 +501,15 @@ const addMember = async (memberId, chatId, id) => {
                 data: {}
             }
         }
-        if(!chat.type==="GROUP_CHAT"){
+        if (!chat.type === "GROUP_CHAT") {
             return {
                 errCode: 0,
                 message: 'Chat is not a group chat!',
                 data: {}
             }
-        } 
+        }
 
-        if(!chat.participants[chat.participants.length - 1]===id){
+        if (!chat.participants[chat.participants.length - 1] === id) {
             return {
                 errCode: 1,
                 message: 'This user is not group leader!',
@@ -549,15 +552,15 @@ const deleteMember = async (memberId, chatId, id) => {
                 data: {}
             }
         }
-        if(!chat.type==="GROUP_CHAT"){
+        if (!chat.type === "GROUP_CHAT") {
             return {
                 errCode: 0,
                 message: 'Chat is not a group chat!',
                 data: {}
             }
-        } 
+        }
 
-        if(!chat.participants[chat.participants.length - 1]===id){
+        if (!chat.participants[chat.participants.length - 1] === id) {
             return {
                 errCode: 1,
                 message: 'This user is not group leader!',
@@ -597,22 +600,22 @@ const grantGroupLeader = async (memberId, chatId, id) => {
                 data: {}
             }
         }
-        if(!chat.type==="GROUP_CHAT"){
+        if (!chat.type === "GROUP_CHAT") {
             return {
                 errCode: 0,
                 message: 'Chat is not a group chat!',
                 data: {}
             }
-        } 
+        }
 
-        if(!chat.participants[chat.participants.length - 1]===id){
+        if (!chat.participants[chat.participants.length - 1] === id) {
             return {
                 errCode: 1,
                 message: 'This user is not group leader!',
                 data: {}
             }
         }
-        const newGroupLeader= memberId;
+        const newGroupLeader = memberId;
         const index = chat.participants.indexOf(memberId);
         if (index !== -1) {
             chat.participants.splice(index, 1);
@@ -630,6 +633,48 @@ const grantGroupLeader = async (memberId, chatId, id) => {
         return {
             errCode: -1,
             message: 'Grant group leader failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const updateGroupChat = async (data) => {
+    try {
+        const chat = await Chat.findById(data._id);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if (!chat.type === "GROUP_CHAT") {
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        }
+        if (data.name)
+            chat.name = data.name;
+        if (data.groupPhoto)
+            chat.groupPhoto = data.groupPhoto;
+        const result = await chat.save();
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
+
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Update group chat successfully!',
+                data: newChats
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Update group chat failed!',
             data: {}
         }
     } catch (error) {
@@ -656,5 +701,6 @@ module.exports = {
     unPinMessage,
     addMember,
     deleteMember,
-    grantGroupLeader
+    grantGroupLeader,
+    updateGroupChat
 }

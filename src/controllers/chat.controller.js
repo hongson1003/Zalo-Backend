@@ -67,6 +67,7 @@ const createGroupChat = async (req, res, next) => {
         const data = req.body;
         const id = req.user.id;
         data.participants.push(id);
+        data.administrator = id;
         if (!data || Object.keys(data).length == 0 || !data.name || data.participants.length < 2) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
@@ -245,7 +246,7 @@ const addMember = async (req, res, next) => {
         if (!memberId || !id || chatId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
         }
-        const response = await chatService.addMember(memberId, chatId ,id);
+        const response = await chatService.addMember(memberId, chatId, id);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -259,7 +260,7 @@ const deleteMember = async (req, res, next) => {
         if (!memberId || !id || chatId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
         }
-        const response = await chatService.deleteMember(memberId, chatId ,id);
+        const response = await chatService.deleteMember(memberId, chatId, id);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -273,11 +274,25 @@ const grantGroupLeader = async (req, res, next) => {
         if (!memberId || !id || chatId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID or user ID' });
         }
-        const response = await chatService.grantGroupLeader(memberId, chatId ,id);
+        const response = await chatService.grantGroupLeader(memberId, chatId, id);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
     }
+}
+
+const updateGroupChat = async (req, res, next) => {
+    try {
+        const data = req.body;
+        if (!data || Object.keys(data).length == 0) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.updateGroupChat(data);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
 }
 
 
@@ -300,5 +315,6 @@ module.exports = {
     unPinMessage,
     addMember,
     deleteMember,
-    grantGroupLeader
+    grantGroupLeader,
+    updateGroupChat
 }

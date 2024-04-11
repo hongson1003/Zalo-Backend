@@ -10,6 +10,7 @@ const InitRoutesChat = (router) => {
         .get(userMiddleware.checkJWT, chatController.findManyChatPagination)
     router.route('/group')
         .post(userMiddleware.checkJWT, chatController.createGroupChat)
+        .put(userMiddleware.checkJWT, chatController.updateGroupChat)
 
     router.route('/message')
         .post(userMiddleware.checkJWT, chatController.sendMessage)
@@ -40,7 +41,7 @@ const InitRoutesChat = (router) => {
     router.route('/message/deleteMember')
         .put(userMiddleware.checkJWT, chatController.deleteMember);
     router.route('/message/grantGroupLeader')
-        .put(userMiddleware.checkJWT, chatController.grantGroupLeader);        
+        .put(userMiddleware.checkJWT, chatController.grantGroupLeader);
     return router;
 }
 
