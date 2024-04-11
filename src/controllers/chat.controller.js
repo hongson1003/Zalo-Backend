@@ -308,7 +308,22 @@ const updateGroupChat = async (req, res, next) => {
     }
 
 }
-
+const getListGroupMember = async (req, res, next) => {
+    try {
+        const chatId = req.body.chatId;
+        if (!chatId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input: chat ID' });
+        }
+        const response = await chatService.getListGroupMember(chatId);
+        if (response.errCode === 0) {
+            return res.status(200).json(response);
+        } else {
+            return res.status(400).json(response);
+        }
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 module.exports = {
@@ -330,5 +345,6 @@ module.exports = {
     addMember,
     deleteMember,
     grantGroupLeader,
-    updateGroupChat
+    updateGroupChat,
+    getListGroupMember
 }

@@ -3,7 +3,7 @@ import Message from "../config/nosql/models/message.model";
 import { STATUS_CHAT } from '../ultils/types';
 import CustomizeChat from '../ultils/customizeChat';
 import Background from "../config/nosql/models/background.model";
-
+import {getUserById} from '../services/user.service.js'
 const accessChat = async (data) => {
     try {
         const isChatRes = await findOnePrivateChat(data.participants[0], data.participants[1]);
@@ -501,7 +501,7 @@ const addMember = async (memberId, chatId, id) => {
                 data: {}
             }
         }
-        if (!chat.type === "GROUP_CHAT") {
+        if (chat.type !== "GROUP_CHAT") {
             return {
                 errCode: 0,
                 message: 'Chat is not a group chat!',
@@ -552,7 +552,7 @@ const deleteMember = async (memberId, chatId, id) => {
                 data: {}
             }
         }
-        if (!chat.type === "GROUP_CHAT") {
+        if (chat.type !== "GROUP_CHAT") {
             return {
                 errCode: 0,
                 message: 'Chat is not a group chat!',
@@ -601,7 +601,7 @@ const grantGroupLeader = async (memberId, chatId, id) => {
                 data: {}
             }
         }
-        if (!chat.type === "GROUP_CHAT") {
+        if (chat.type !== "GROUP_CHAT") {
             return {
                 errCode: 0,
                 message: 'Chat is not a group chat!',
@@ -651,7 +651,7 @@ const updateGroupChat = async (data) => {
                 data: {}
             }
         }
-        if (!chat.type === "GROUP_CHAT") {
+        if (chat.type !== "GROUP_CHAT") {
             return {
                 errCode: 0,
                 message: 'Chat is not a group chat!',
@@ -684,6 +684,49 @@ const updateGroupChat = async (data) => {
 }
 
 
+const getListGroupMember = async (chatId) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if (!chat.type === "GROUP_CHAT") {
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        }
+        const listMemberId = chat.participants;
+        let listMember = [];
+
+        await Promise.all(listMemberId.map(async (memberId) => {
+            let member = await getUserById(memberId);
+            listMember.push(member);
+        }));
+
+
+        if (listMember.length > 0) {
+            return {
+                errCode: 0,
+                message: 'Get list members successfully!',
+                data: listMember
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Get list members failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -703,5 +746,6 @@ module.exports = {
     addMember,
     deleteMember,
     grantGroupLeader,
-    updateGroupChat
+    updateGroupChat,
+    getListGroupMember
 }
