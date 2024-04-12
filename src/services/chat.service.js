@@ -3,7 +3,7 @@ import Message from "../config/nosql/models/message.model";
 import { STATUS_CHAT } from '../ultils/types';
 import CustomizeChat from '../ultils/customizeChat';
 import Background from "../config/nosql/models/background.model";
-import {getUserById} from '../services/user.service.js'
+import { getUserById } from '../services/user.service.js'
 const accessChat = async (data) => {
     try {
         const isChatRes = await findOnePrivateChat(data.participants[0], data.participants[1]);
@@ -177,7 +177,7 @@ const findManyMessagePagination = async (chatId, limit) => {
         const mapUsers = await CustomizeChat.getMapUserTargetId(messages.map(item => item.chat));
         let newMessages = messages.map(item => {
             let newItem = { ...item.toObject() };
-            newItem.sender = mapUsers[String(item.sender)];
+            newItem.sender = mapUsers[String(item.sender)] || { id: item.sender };
             return newItem;
         })
         if (messages.length > 0) {
@@ -590,8 +590,7 @@ const deleteMember = async (memberId, chatId, id) => {
     }
 }
 
-const grantGroupLeader = async (memberId, chatId, id) => {
-    //Gán quyền trưởng nhóm cho thành viên khác
+const grantGroupLeader = async (memberId, userId, chatId,) => {
     try {
         const chat = await Chat.findById(chatId);
         if (!chat) {
@@ -608,33 +607,22 @@ const grantGroupLeader = async (memberId, chatId, id) => {
                 data: {}
             }
         }
-
-        if (!chat.participants[chat.participants.length - 1] === id) {
+        if (userId !== chat.administrator) {
             return {
                 errCode: 1,
-                message: 'This user is not group leader!',
+                message: 'This user is not administrator!',
                 data: {}
             }
         }
-        const newGroupLeader = memberId;
-        const index = chat.participants.indexOf(memberId);
-        if (index !== -1) {
-            chat.participants.splice(index, 1);
-        }
-        chat.participants.push(newGroupLeader);
+        chat.administrator = memberId;
+        chat.participants = chat.participants.filter(item => item !== userId);
         const result = await chat.save();
-
-        if (result) {
-            return {
-                errCode: 0,
-                message: 'Grant group leader successfully!',
-                data: chat.participants
-            }
-        }
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
         return {
-            errCode: -1,
-            message: 'Grant group leader failed!',
-            data: {}
+            errCode: 0,
+            message: 'Grant group leader successfully!',
+            data: newChats
         }
     } catch (error) {
         throw error;

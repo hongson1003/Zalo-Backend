@@ -284,7 +284,7 @@ const grantGroupLeader = async (req, res, next) => {
         if (!memberId || !userId || !chatId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID, or user ID' });
         }
-        const response = await chatService.grantGroupLeader(memberId, chatId, userId);
+        const response = await chatService.grantGroupLeader(memberId, userId, chatId);
         if (response.errCode === 0) {
             return res.status(200).json(response);
         } else {

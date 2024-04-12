@@ -40,9 +40,11 @@ const InitRoutesChat = (router) => {
         .put(userMiddleware.checkJWT, chatController.addMember);
     router.route('/message/deleteMemer')
         .put(userMiddleware.checkJWT, chatController.deleteMember);
-    router.route('/message/grantGroupLeader')
+
+
+    router.route('/grantGroupLeader')
         .put(userMiddleware.checkJWT, chatController.grantGroupLeader);
-    router.route('/message/getListGroupMember')
+    router.route('/getListGroupMember')
         .get(userMiddleware.checkJWT, chatController.getListGroupMember);
 
     return router;
