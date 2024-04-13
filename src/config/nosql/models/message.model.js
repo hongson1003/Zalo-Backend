@@ -49,7 +49,12 @@ const MessageModel = Schema({
     isPin: {
         type: Boolean,
         default: false,
-    }
+    },
+    reply: {
+        type: Schema.Types.ObjectId,
+        ref: 'Message',
+        default: null
+    },
 }, {
     timestamps: true,
 }

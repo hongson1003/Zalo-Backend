@@ -16,6 +16,8 @@ const InitRoutesChat = (router) => {
         .post(userMiddleware.checkJWT, chatController.sendMessage)
     router.route('/message/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyMessagePagination)
+    router.route('/message/reply')
+        .post(userMiddleware.checkJWT, chatController.replyMessage)
 
     router.route('/background/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyBackgroundPagination)
@@ -40,7 +42,6 @@ const InitRoutesChat = (router) => {
         .put(userMiddleware.checkJWT, chatController.addMember);
     router.route('/message/deleteMemer')
         .put(userMiddleware.checkJWT, chatController.deleteMember);
-
 
     router.route('/grantGroupLeader')
         .put(userMiddleware.checkJWT, chatController.grantGroupLeader);

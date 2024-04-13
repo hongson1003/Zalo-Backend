@@ -325,6 +325,20 @@ const getListGroupMember = async (req, res, next) => {
     }
 }
 
+const replyMessage = async (req, res, next) => {
+    try {
+        const { messsageCurrentId, messagePrevId } = req.body;
+        if (!messsageCurrentId || !messagePrevId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.replyMessage(messsageCurrentId, messagePrevId);
+        return res.status(200).json(response);
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 module.exports = {
     accessChat,
@@ -346,5 +360,6 @@ module.exports = {
     deleteMember,
     grantGroupLeader,
     updateGroupChat,
-    getListGroupMember
+    getListGroupMember,
+    replyMessage
 }

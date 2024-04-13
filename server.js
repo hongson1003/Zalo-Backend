@@ -66,7 +66,6 @@ io.on('connection', function (socket) {
   })
 
   socket.on('new-group-chat', data => {
-    console.log(data.administrator)
     socket.in(data.administrator).emit('new-group-chat', data);
   })
 

@@ -148,12 +148,15 @@ const sendMessage = async (data) => {
         chat.lastedMessage = result;
         await chat.save();
         // const newMessage = await result.populate('chat');
+        const mapUsers = await CustomizeChat.getMapUserTargetId([chat]);
+        const newMessage = { ...result.toObject() };
+        newMessage.sender = mapUsers[String(result.sender)];
 
         if (result) {
             return {
                 errCode: 0,
                 message: 'Send message successfully!',
-                data: result
+                data: newMessage
             }
         }
         return {
@@ -172,13 +175,16 @@ const findManyMessagePagination = async (chatId, limit) => {
         if (limit > total) {
             limit = total;
         }
-        const messages = await Message.find({ chat: chatId }).populate('chat')
+        const messages = await Message.find({ chat: chatId }).populate('chat').populate('reply')
             .skip(total - limit).limit(limit);
 
         const mapUsers = await CustomizeChat.getMapUserTargetId(messages.map(item => item.chat));
         let newMessages = messages.map(item => {
             let newItem = { ...item.toObject() };
             newItem.sender = mapUsers[String(item.sender)] || { id: item.sender };
+            if (newItem.reply) {
+                newItem.reply.sender = mapUsers[String(item.reply.sender)] || { id: item.reply.sender };
+            }
             return newItem;
         })
         if (messages.length > 0) {
@@ -675,7 +681,6 @@ const updateGroupChat = async (data) => {
     }
 }
 
-
 const getListGroupMember = async (chatId) => {
     try {
         const chat = await Chat.findById(chatId);
@@ -719,6 +724,35 @@ const getListGroupMember = async (chatId) => {
     }
 }
 
+const replyMessage = async (messsageCurrentId, messagePrevId) => {
+    try {
+        const currentMessage = await Message.findById(messsageCurrentId).populate('chat');
+        currentMessage.reply = messagePrevId;
+        let result = await currentMessage.save();
+        result = await result.populate('reply');
+        let newMessage = { ...result.toObject() };
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result.chat]);
+        newMessage.sender = mapUsers[String(result.sender)];
+        newMessage.reply.sender = mapUsers[String(result.reply.sender) || { id: item.reply.sender }];
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Reply message successfully!',
+                data: newMessage
+            }
+        }
+
+        return {
+            errCode: -1,
+            message: 'Reply message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -739,5 +773,6 @@ module.exports = {
     deleteMember,
     grantGroupLeader,
     updateGroupChat,
-    getListGroupMember
+    getListGroupMember,
+    replyMessage
 }
