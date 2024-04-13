@@ -32,7 +32,10 @@ const ChatModel = Schema({
         ref: "Background",
         require: false
     },
-    status: Boolean,
+    status: {
+        type: Boolean,
+        default: true,
+    },
 }, {
     timestamps: true,
 }

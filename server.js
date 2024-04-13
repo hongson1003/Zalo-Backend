@@ -65,9 +65,19 @@ io.on('connection', function (socket) {
     socket.in(data).emit('online', data);
   })
 
+  socket.on('new-group-chat', data => {
+    console.log(data.administrator)
+    socket.in(data.administrator).emit('new-group-chat', data);
+  })
+
   socket.on('offline', async data => {
     await userService.updateOnline(data, new Date());
     socket.in(data).emit('offline', data);
+  })
+
+  socket.on('transfer-disband-group', data => {
+    console.log('transfer-disband-group', data);
+    socket.in(data._id).emit('transfer-disband-group', data);
   })
 
   socket.on("disconnect", (reason) => {

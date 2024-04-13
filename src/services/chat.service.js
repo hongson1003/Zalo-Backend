@@ -84,7 +84,8 @@ const findManyChatPagination = async (userId, page, limit) => {
                 $elemMatch: {
                     $eq: userId
                 }
-            }
+            },
+            status: true
         }).skip(offset)
             .limit(limit)
             .populate('background')
@@ -616,6 +617,9 @@ const grantGroupLeader = async (memberId, userId, chatId,) => {
         }
         chat.administrator = memberId;
         chat.participants = chat.participants.filter(item => item !== userId);
+        if (chat.participants.length == 1) {
+            chat.status = false;
+        }
         const result = await chat.save();
         const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
         const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
