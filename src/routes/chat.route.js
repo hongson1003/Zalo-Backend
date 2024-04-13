@@ -16,8 +16,6 @@ const InitRoutesChat = (router) => {
         .post(userMiddleware.checkJWT, chatController.sendMessage)
     router.route('/message/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyMessagePagination)
-    router.route('/message/reply')
-        .post(userMiddleware.checkJWT, chatController.replyMessage)
 
     router.route('/background/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyBackgroundPagination)
