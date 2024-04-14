@@ -20,7 +20,7 @@ const getAllUsers = async () => {
 }
 
 const getUserById = async (id) => {
-    const attributes = ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline'];
+    const attributes = ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline', 'peerId'];
     try {
         const user = await db.User.findOne({
             where: {

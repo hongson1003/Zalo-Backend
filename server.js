@@ -79,7 +79,23 @@ io.on('connection', function (socket) {
     socket.in(data._id).emit('transfer-disband-group', data);
   })
 
+  socket.on('open-call', data => {
+    console.log('open-call', data)
+    socket.in(data.room).emit('open-call', data);
+  })
+
+  socket.on('join-call', data => {
+    socket.join(data.room);
+    console.log('peerId', data)
+    socket.in(data.room).emit('user-connected', data.peerId);
+  })
+
+  socket.on('reject-call', data => {
+    socket.in(data.room).emit('reject-call', data);
+  })
+
   socket.on("disconnect", (reason) => {
+    console.log('disconnect', reason);
     // else the socket will automatically try to reconnect
   });
 

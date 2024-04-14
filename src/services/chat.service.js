@@ -755,6 +755,30 @@ const replyMessage = async (messsageCurrentId, messagePrevId) => {
 
 }
 
+const getAccessChat = async (chatId) => {
+    try {
+        const chat = await Chat.findById(chatId).populate('background').populate('lastedMessage');
+        const mapUsers = await CustomizeChat.getMapUserTargetId([chat]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([chat], mapUsers);
+
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        return {
+            errCode: 0,
+            message: 'Get chat successfully!',
+            data: newChats
+        }
+    } catch (error) {
+        throw error;
+    }
+
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -776,5 +800,6 @@ module.exports = {
     grantGroupLeader,
     updateGroupChat,
     getListGroupMember,
-    replyMessage
+    replyMessage,
+    getAccessChat
 }

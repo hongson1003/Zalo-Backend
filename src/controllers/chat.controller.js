@@ -333,7 +333,17 @@ const replyMessage = async (req, res, next) => {
         }
         const response = await chatService.replyMessage(messsageCurrentId, messagePrevId);
         return res.status(200).json(response);
-        
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getAccessChat = async (req, res, next) => {
+    try {
+        const chatId = req.query.chatId;
+        const response = await chatService.getAccessChat(chatId);
+        return res.status(200).json(response);
     } catch (error) {
         next(error);
     }
@@ -361,5 +371,6 @@ module.exports = {
     grantGroupLeader,
     updateGroupChat,
     getListGroupMember,
-    replyMessage
+    replyMessage,
+    getAccessChat
 }

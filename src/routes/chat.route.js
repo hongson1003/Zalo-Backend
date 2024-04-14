@@ -4,6 +4,7 @@ import userMiddleware from '../middleware/user.middleware';
 const InitRoutesChat = (router) => {
     router.route('/access')
         .post(userMiddleware.checkJWT, chatController.accessChat)
+        .get(userMiddleware.checkJWT, chatController.getAccessChat)
     router.route('/private')
         .get(userMiddleware.checkJWT, chatController.findOneByPrivate)
     router.route('/pagination')

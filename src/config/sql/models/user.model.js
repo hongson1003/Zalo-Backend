@@ -55,6 +55,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     refresh_token: DataTypes.STRING,
+    peerId: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   }, {

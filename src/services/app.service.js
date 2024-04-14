@@ -41,6 +41,7 @@ const register = async ({ userName, phoneNumber, password: plainPassword }) => {
             refresh_token,
             avatar: Buffer.from(avatarRandom, "utf-8"),
             lastedOnline: new Date(),
+            peerId: uuidv4()
         });
         // create profile user
         const profile = await db.ProfileContact.create({
