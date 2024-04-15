@@ -3,8 +3,20 @@ import Message from "../config/nosql/models/message.model";
 import { STATUS_CHAT } from '../ultils/types';
 import CustomizeChat from '../ultils/customizeChat';
 import Background from "../config/nosql/models/background.model";
-import { getUserById } from '../services/user.service.js'
+import { getUserById, getUserByPhone } from '../services/user.service.js'
 import _ from "lodash";
+
+
+function objectId() {
+    return hex(Date.now() / 1000) +
+        ' '.repeat(16).replace(/./g, () => hex(Math.random() * 16))
+}
+
+function hex(value) {
+    return Math.floor(value).toString(16)
+}
+
+
 const accessChat = async (data) => {
     try {
         const isChatRes = await findOnePrivateChat(data.participants[0], data.participants[1]);
@@ -542,6 +554,7 @@ const addMembers = async (chatId, members, id) => {
         throw error;
     }
 }
+
 const deleteMember = async (memberId, chatId, id) => {
     try {
         const chat = await Chat.findById(chatId);
@@ -780,6 +793,94 @@ const getAccessChat = async (chatId) => {
 
 }
 
+const notifyMessage = async (chatId, content) => {
+    try {
+        const resSender = await getUserByPhone(123);
+        if (resSender.errCode !== 0) {
+            return {
+                errCode: -1,
+                message: 'Sender not found!',
+                data: {}
+            }
+        }
+        const createMessage = {
+            _id: objectId(),
+            chat: chatId,
+            sender: resSender.data.id,
+            content: content,
+            type: "NOTIFY"
+        }
+        const message = new Message(createMessage);
+        const result = await message.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Notify message successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Notify message failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const outGroupChat = async (chatId, userId) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if (chat.type !== "GROUP_CHAT") {
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        }
+
+        if (chat.administrator === userId)
+            return {
+                errCode: 1,
+                message: 'This user is group leader!',
+                data: {}
+            }
+
+        const participants = chat.participants.filter(item => item !== userId);
+        chat.participants = participants;
+        if (participants.length == 1) {
+            chat.status = false;
+        }
+        const result = await chat.save();
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
+
+
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Out group chat successfully!',
+                data: newChats
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Out group chat failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -802,5 +903,7 @@ module.exports = {
     updateGroupChat,
     getListGroupMember,
     replyMessage,
-    getAccessChat
+    getAccessChat,
+    notifyMessage,
+    outGroupChat
 }

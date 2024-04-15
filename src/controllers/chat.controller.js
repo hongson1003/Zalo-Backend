@@ -285,7 +285,7 @@ const disbandByLeader = async (req, res, next) => {
         if (!memberId || !userId || !chatId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID, or user ID' });
         }
-        const response = await chatService.grantGdisbandByLeaderroupLeader(memberId, userId, chatId);
+        const response = await chatService.disbandByLeader(memberId, userId, chatId);
         if (response.errCode === 0) {
             return res.status(200).json(response);
         } else {
@@ -350,6 +350,35 @@ const getAccessChat = async (req, res, next) => {
     }
 }
 
+const notifyMessage = async (req, res, next) => {
+    try {
+        const { chatId, message } = req.body;
+        if (!chatId || !message) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.notifyMessage(chatId, message);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+const outGroupChat = async (req, res, next) => {
+    try {
+        const chatId = req.body.chatId;
+        const userId = req.user.id;
+        if (!chatId || !userId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.outGroupChat(chatId, userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
 
 module.exports = {
     accessChat,
@@ -373,5 +402,7 @@ module.exports = {
     updateGroupChat,
     getListGroupMember,
     replyMessage,
-    getAccessChat
+    getAccessChat,
+    notifyMessage,
+    outGroupChat
 }

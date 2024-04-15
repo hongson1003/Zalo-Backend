@@ -91,6 +91,18 @@ io.on('connection', function (socket) {
     socket.in(data.room).emit('reject-call', data);
   })
 
+  socket.on('add-member', data => {
+    if (data?.participants) {
+      data.participants.forEach(participant => {
+        socket.in(participant.id).emit('add-member', data);
+      });
+    }
+  })
+
+  socket.on('leave-group', data => {
+    socket.in(data.chatId).emit('leave-group', data);
+  })
+
   socket.on("disconnect", (reason) => {
     console.log('disconnect', reason);
     // else the socket will automatically try to reconnect

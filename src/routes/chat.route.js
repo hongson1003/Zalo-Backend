@@ -12,6 +12,8 @@ const InitRoutesChat = (router) => {
     router.route('/group')
         .post(userMiddleware.checkJWT, chatController.createGroupChat)
         .put(userMiddleware.checkJWT, chatController.updateGroupChat)
+    router.route('/group/out')
+        .put(userMiddleware.checkJWT, chatController.outGroupChat)
 
     router.route('/message')
         .post(userMiddleware.checkJWT, chatController.sendMessage)
@@ -47,6 +49,8 @@ const InitRoutesChat = (router) => {
         .put(userMiddleware.checkJWT, chatController.disbandByLeader);
     router.route('/getListGroupMember')
         .get(userMiddleware.checkJWT, chatController.getListGroupMember);
+
+    router.post('/notify', chatController.notifyMessage)
 
     return router;
 }
