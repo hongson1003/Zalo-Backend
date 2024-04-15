@@ -75,18 +75,15 @@ io.on('connection', function (socket) {
   })
 
   socket.on('transfer-disband-group', data => {
-    console.log('transfer-disband-group', data);
     socket.in(data._id).emit('transfer-disband-group', data);
   })
 
   socket.on('open-call', data => {
-    console.log('open-call', data)
     socket.in(data.room).emit('open-call', data);
   })
 
   socket.on('join-call', data => {
     socket.join(data.room);
-    console.log('peerId', data)
     socket.in(data.room).emit('user-connected', data.peerId);
   })
 

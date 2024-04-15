@@ -238,15 +238,14 @@ const unPinMessage = async (req, res, next) => {
     }
 }
 
-const addMember = async (req, res, next) => {
+const addMembers = async (req, res, next) => {
     try {
-        const { memberId, chatId } = req.body;
+        const { members, chatId } = req.body;
         const userId = req.user.id;
-
-        if (!memberId || !chatId || !userId) {
+        if (!members || !chatId || !userId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID, or user ID' });
         }
-        const response = await chatService.addMember(memberId, chatId, userId);
+        const response = await chatService.addMembers(chatId, members, userId);
         if (response) {
             return res.status(200).json(response);
         } else {
@@ -257,6 +256,7 @@ const addMember = async (req, res, next) => {
     }
 }
 
+// kich member by leader
 const deleteMember = async (req, res, next) => {
     try {
         const { memberId, chatId } = req.body;
@@ -276,7 +276,8 @@ const deleteMember = async (req, res, next) => {
     }
 }
 
-const grantGroupLeader = async (req, res, next) => {
+// giải tán 
+const disbandByLeader = async (req, res, next) => {
     try {
         const memberId = req.body.memberId;
         const chatId = req.body.chatId;
@@ -284,7 +285,7 @@ const grantGroupLeader = async (req, res, next) => {
         if (!memberId || !userId || !chatId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input: member ID, chat ID, or user ID' });
         }
-        const response = await chatService.grantGroupLeader(memberId, userId, chatId);
+        const response = await chatService.grantGdisbandByLeaderroupLeader(memberId, userId, chatId);
         if (response.errCode === 0) {
             return res.status(200).json(response);
         } else {
@@ -366,9 +367,9 @@ module.exports = {
     deleteMessage,
     pinMessage,
     unPinMessage,
-    addMember,
+    addMembers,
     deleteMember,
-    grantGroupLeader,
+    disbandByLeader,
     updateGroupChat,
     getListGroupMember,
     replyMessage,

@@ -4,6 +4,7 @@ import { STATUS_CHAT } from '../ultils/types';
 import CustomizeChat from '../ultils/customizeChat';
 import Background from "../config/nosql/models/background.model";
 import { getUserById } from '../services/user.service.js'
+import _ from "lodash";
 const accessChat = async (data) => {
     try {
         const isChatRes = await findOnePrivateChat(data.participants[0], data.participants[1]);
@@ -500,7 +501,7 @@ const unPinMessage = async (messageId) => {
     }
 }
 
-const addMember = async (memberId, chatId, id) => {
+const addMembers = async (chatId, members, id) => {
     try {
         const chat = await Chat.findById(chatId);
         if (!chat) {
@@ -517,29 +518,19 @@ const addMember = async (memberId, chatId, id) => {
                 data: {}
             }
         }
+        const participants = [...chat.participants];
 
-        if (!chat.participants[chat.participants.length - 1] === id) {
-            return {
-                errCode: 1,
-                message: 'This user is not group leader!',
-                data: {}
-            }
-        }
-        const groupLeader = chat.participants[chat.participants.length - 1];
-        const index = chat.participants.indexOf(groupLeader);
-        if (index !== -1) {
-            chat.participants.splice(index, 1);
-        }
-
-        chat.participants.push(memberId);
-        chat.participants.push(groupLeader);
+        const mergedParticipants = _.union(participants, members);
+        chat.participants = mergedParticipants;
         const result = await chat.save();
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
 
         if (result) {
             return {
                 errCode: 0,
                 message: 'Add member successfully!',
-                data: chat.participants
+                data: newChats
             }
         }
         return {
@@ -579,14 +570,24 @@ const deleteMember = async (memberId, chatId, id) => {
         const index = chat.participants.indexOf(memberId);
         if (index !== -1) {
             chat.participants.splice(index, 1);
+        } else {
+            return {
+                errCode: -1,
+                message: 'Member not found!',
+                data: {}
+            }
         }
         const result = await chat.save();
+        // trả về chat mới
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
+
 
         if (result) {
             return {
                 errCode: 0,
                 message: 'Delete member successfully!',
-                data: chat.participants
+                data: newChats
             }
         }
         return {
@@ -599,7 +600,7 @@ const deleteMember = async (memberId, chatId, id) => {
     }
 }
 
-const grantGroupLeader = async (memberId, userId, chatId,) => {
+const disbandByLeader = async (memberId, userId, chatId,) => {
     try {
         const chat = await Chat.findById(chatId);
         if (!chat) {
@@ -795,9 +796,9 @@ module.exports = {
     deleteMessage,
     pinMessage,
     unPinMessage,
-    addMember,
+    addMembers,
     deleteMember,
-    grantGroupLeader,
+    disbandByLeader,
     updateGroupChat,
     getListGroupMember,
     replyMessage,

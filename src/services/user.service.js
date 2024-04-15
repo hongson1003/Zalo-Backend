@@ -514,12 +514,12 @@ const findFriendsPagination = async (userId, page, limit) => {
                 {
                     model: db.User,
                     as: 'user1',
-                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 },
                 {
                     model: db.User,
                     as: 'user2',
-                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
+                    attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 }
             ],
             nest: true,
