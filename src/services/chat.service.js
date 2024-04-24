@@ -37,6 +37,7 @@ const accessChat = async (data) => {
             data: newChats,
         }
     } catch (error) {
+        console.log('error: ', error);
         throw error;
     }
 }
