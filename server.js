@@ -103,11 +103,13 @@ io.on('connection', function (socket) {
     socket.in(data.chatId).emit('leave-group', data);
   })
 
+  socket.on('grant', data => {
+    socket.in(data._id).emit('grant', data);
+  })
+
   socket.on("disconnect", (reason) => {
-    console.log('disconnect', reason);
     // else the socket will automatically try to reconnect
   });
-
 
 
 });

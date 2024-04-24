@@ -49,7 +49,7 @@ const findUserWithProfileById = async (req, res, next) => {
     next();
 }
 
-const sendRequestAddFriend = async (req, res, next) => {
+const sendRequestAddFriendOrRecall = async (req, res, next) => {
     try {
         const { userId, content } = req.body;
         const user = req.user;
@@ -59,7 +59,7 @@ const sendRequestAddFriend = async (req, res, next) => {
                 message: 'Missing required parameter'
             })
         }
-        let response = await userService.sendRequestAddFriend(user.id, userId, content);
+        let response = await userService.sendRequestAddFriendOrRecall(user.id, userId, content);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -286,7 +286,7 @@ module.exports = {
     createInfoContact,
     getProfileByUserId,
     findUserWithProfileById,
-    sendRequestAddFriend,
+    sendRequestAddFriendOrRecall,
     findFriendShip,
     acceptRequestAddFriend,
     rejectFriendShip,

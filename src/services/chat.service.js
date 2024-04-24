@@ -881,6 +881,105 @@ const outGroupChat = async (chatId, userId) => {
     }
 }
 
+const grantGroupChat = async (chatId, memberId, userId) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if (chat.type !== "GROUP_CHAT") {
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        }
+        if (chat.participants.indexOf(memberId) === -1) {
+            return {
+                errCode: 1,
+                message: 'Member not in group chat!',
+                data: {}
+            }
+        }
+
+        if (chat.administrator !== userId) {
+            return {
+                errCode: 1,
+                message: 'This user is not group leader!',
+                data: {}
+            }
+        }
+        chat.administrator = memberId;
+        const result = await chat.save();
+        const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
+        const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
+
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Grant group leader successfully!',
+                data: newChats
+            }
+        }
+
+        return {
+            errCode: -1,
+            message: 'Grant group leader failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const deleteGroupChat = async (chatId, userId) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if (chat.type !== "GROUP_CHAT") {
+            return {
+                errCode: 0,
+                message: 'Chat is not a group chat!',
+                data: {}
+            }
+        }
+        if (chat.administrator !== userId) {
+            return {
+                errCode: 1,
+                message: 'This user is not group leader!',
+                data: {}
+            }
+        }
+        chat.status = false;
+        const result = await chat.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Delete group chat successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Delete group chat failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -905,5 +1004,7 @@ module.exports = {
     replyMessage,
     getAccessChat,
     notifyMessage,
-    outGroupChat
+    outGroupChat,
+    grantGroupChat,
+    deleteGroupChat
 }

@@ -379,6 +379,34 @@ const outGroupChat = async (req, res, next) => {
 
 }
 
+const grantGroupChat = async (req, res, next) => {
+    try {
+        const { chatId, memberId } = req.body;
+        const userId = req.user.id;
+        if (!chatId || !memberId || !userId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.grantGroupChat(chatId, memberId, userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const deleteGroupChat = async (req, res, next) => {
+    try {
+        const chatId = req.body.chatId;
+        const userId = req.user.id;
+        if (!chatId || !userId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.deleteGroupChat(chatId, userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 module.exports = {
     accessChat,
@@ -404,5 +432,7 @@ module.exports = {
     replyMessage,
     getAccessChat,
     notifyMessage,
-    outGroupChat
+    outGroupChat,
+    grantGroupChat,
+    deleteGroupChat
 }

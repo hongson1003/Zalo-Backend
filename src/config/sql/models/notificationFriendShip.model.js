@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             references: {
                 model: 'FriendShip',
-                key: 'user1Id'
+                key: 'user1Id',
             }
         },
         receiverId: {
@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             references: {
                 model: 'FriendShip',
-                key: 'user2Id'
+                key: 'user2Id',
             }
         },
         content: {

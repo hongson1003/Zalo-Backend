@@ -52,6 +52,11 @@ const InitRoutesChat = (router) => {
 
     router.post('/notify', chatController.notifyMessage)
 
+    router.route('/group/grant')
+        .put(userMiddleware.checkJWT, chatController.grantGroupChat);
+
+    router.route('/group', userMiddleware.checkJWT)
+        .delete(chatController.deleteGroupChat)
     return router;
 }
 

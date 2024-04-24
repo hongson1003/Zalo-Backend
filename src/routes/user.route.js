@@ -23,7 +23,7 @@ const IntRoutesUsers = (router) => {
 
     router.route('/friendShip')
         .get(userMiddleware.checkJWT, userController.findFriendShip)
-        .post(userMiddleware.checkJWT, userController.sendRequestAddFriend)
+        .post(userMiddleware.checkJWT, userController.sendRequestAddFriendOrRecall)
         .put(userMiddleware.checkJWT, userController.acceptRequestAddFriend)
 
     router.route('/friendShip/reject')

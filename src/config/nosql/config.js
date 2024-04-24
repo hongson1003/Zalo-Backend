@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const username = encodeURIComponent(process.env.MONGOOSE_HOST);
 const password = encodeURIComponent(process.env.MONGOOSE_PASSWORD);
 
+// const uri = `mongodb+srv://${username}:${password}@cluster0.z1rlzqm.mongodb.net/zalo?retryWrites=true&w=majority=Cluster0`
 const uri = `mongodb+srv://${username}:${password}@cluster0.z1rlzqm.mongodb.net/zalo?retryWrites=true&w=majority`;
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 

@@ -28,6 +28,10 @@ const getUserById = async (id) => {
             },
             attributes
         });
+
+        const base64 = Buffer.from(user.avatar, 'base64');
+        user.avatar = base64.toString();
+
         if (user)
             return {
                 errCode: 0,
@@ -135,7 +139,7 @@ const getUserWithProfileById = async (phoneNumber) => {
 
 }
 
-const sendRequestAddFriend = async (user1Id, user2Id, content) => {
+const sendRequestAddFriendOrRecall = async (user1Id, user2Id, content) => {
     try {
         user1Id = parseInt(user1Id);
         user2Id = parseInt(user2Id);
@@ -177,14 +181,28 @@ const sendRequestAddFriend = async (user1Id, user2Id, content) => {
                 message: 'Send request success',
                 data: friendShipOne
             }
+        } else {
+            // xóa notification
+            await db.NotificationFriendShip.destroy({
+                where: {
+                    senderId: user1Id,
+                    receiverId: user2Id
+                }
+            });
+            // đang chuẩn bị thu hồi
+            await friendShipOne.destroy({
+                where: {
+                    // criteria
+                    user1Id: user1Id,
+                    user2Id: user2Id
+                }
+            });
+            return {
+                errCode: 3,
+                message: 'Thu hồi tin nhắn success'
+            }
         }
-        // đang chuẩn bị thu hồi
-        friendShipOne.status = STATUS_FRIENDSHIP.REJECT;
-        await friendShipOne.save();
-        return {
-            errCode: 3,
-            message: 'Thu hồi tin nhắn success'
-        }
+
     } catch (error) {
         throw error;
     }
@@ -249,6 +267,7 @@ const acceptRequestAddFriend = async (user1Id, user2Id) => {
             },
             raw: false,
         });
+
         if (friendShipDB && friendShipDB.status === STATUS_FRIENDSHIP.PENDING) {
             friendShipDB.status = STATUS_FRIENDSHIP.RESOLVE;
             await friendShipDB.save();
@@ -296,10 +315,16 @@ const unFriend = async (user1Id, user2Id) => {
     try {
         const friendShipDB = await db.FriendShip.findOne({
             where: {
-                user1Id,
-                user2Id,
-                user2Id: user1Id,
-                user1Id: user2Id
+                [Op.or]: [
+                    {
+                        user1Id,
+                        user2Id
+                    },
+                    {
+                        user1Id: user2Id,
+                        user2Id: user1Id
+                    }
+                ]
             },
             raw: false,
         });
@@ -356,7 +381,7 @@ const findAllNotifications = async (userId, readStatus) => {
             },
             {
                 model: db.FriendShip,
-                as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
+                // as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
                 foreignKey: 'senderId',
                 targetKey: 'user1Id',
                 where: {
@@ -568,10 +593,17 @@ const getMany = async (ids) => {
             },
             attributes: attributes,
         });
+
+        const usersCustomizes = users.map(user => {
+            const base64 = Buffer.from(user.avatar, 'base64');
+            user.avatar = base64.toString();
+            return user;
+        });
+
         return {
             errCode: 0,
-            message: 'Find all users',
-            data: users
+            message: 'Find users with ids',
+            data: usersCustomizes
         }
     } catch (error) {
         throw new Error(error);
@@ -683,7 +715,7 @@ module.exports = {
     newInfoContact,
     getProfileByUserId,
     getUserWithProfileById,
-    sendRequestAddFriend,
+    sendRequestAddFriendOrRecall,
     findFriendShip,
     acceptRequestAddFriend,
     rejectFriendShip,
