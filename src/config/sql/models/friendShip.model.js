@@ -13,28 +13,38 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             FriendShip.belongsTo(models.User, {
                 foreignKey: 'user1Id',
-                as: 'user1'
+                as: 'sender'
             });
 
             FriendShip.belongsTo(models.User, {
                 foreignKey: 'user2Id',
-                as: 'user2'
+                as: 'receiver'
             });
 
-            
 
         }
     }
     FriendShip.init({
-        user1Id: {
+        id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
+            autoIncrement: true,
+        },
+        user1Id: {
+            type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: 'User',
+                key: 'id',
+            }
         },
         user2Id: {
             type: DataTypes.INTEGER,
-            primaryKey: true,
             allowNull: false,
+            references: {
+                model: 'User',
+                key: 'id'
+            }
         },
         status: DataTypes.STRING,
         createdAt: DataTypes.DATE,

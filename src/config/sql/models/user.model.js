@@ -20,9 +20,6 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'user2Id' // Khóa ngoại của user đích trong bảng FriendShip
       });
 
-
-
-
       User.hasMany(models.Post, {
         foreignKey: 'userId'
       });
@@ -30,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Comment, {
         foreignKey: 'userId'
       });
+
     }
   }
   User.init({

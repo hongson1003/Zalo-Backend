@@ -11,25 +11,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            NotificationFriendShip.belongsTo(models.User, {
-                foreignKey: 'senderId',
-                as: 'sender'
-            })
-
-            NotificationFriendShip.belongsTo(models.User, {
-                foreignKey: 'receiverId',
-                as: 'receiver'
-            })
-
-            // friendShip
             NotificationFriendShip.belongsTo(models.FriendShip, {
-                foreignKey: 'senderId',
-                targetKey: 'user1Id',
-            });
-
-            NotificationFriendShip.belongsTo(models.FriendShip, {
-                foreignKey: 'receiverId',
-                targetKey: 'user2Id',
+                foreignKey: 'friendShipId',
+                as: 'friendShip',
+                onDelete: 'CASCADE',
             });
 
         }
@@ -41,23 +26,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             autoIncrement: true
         },
-        senderId: {
+        friendShipId: {
             type: DataTypes.INTEGER,
-            primaryKey: true,
             allowNull: false,
             references: {
                 model: 'FriendShip',
-                key: 'user1Id',
-            }
-        },
-        receiverId: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false,
-            references: {
-                model: 'FriendShip',
-                key: 'user2Id',
-            }
+                key: 'id',
+            },
         },
         content: {
             type: DataTypes.STRING,

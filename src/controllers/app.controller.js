@@ -66,11 +66,10 @@ const check = async (req, res, next) => {
         let decoded = handleJwt.verify(access_token, SECRET);
         const userDecoded = decoded?.data;
         const userRes = await userService.getUserById(userDecoded.id);
-        const standardUser = customizeUser.standardUser(userRes.data);
         return res.status(200).json({
             errCode: 0,
             data: {
-                user: standardUser,
+                user: userRes.data,
                 access_token,
                 refresh_token
             },

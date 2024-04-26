@@ -10,22 +10,12 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 autoIncrement: true
             },
-            senderId: {
-                allowNull: false,
-                primaryKey: true,
+            friendShipId: {
                 type: Sequelize.INTEGER,
+                allowNull: false,
                 references: {
                     model: 'FriendShip',
-                    key: 'user1Id'
-                }
-            },
-            receiverId: {
-                allowNull: false,
-                primaryKey: true,
-                type: Sequelize.INTEGER,
-                references: {
-                    model: 'FriendShip',
-                    key: 'user2Id'
+                    key: 'id',
                 }
             },
             content: {

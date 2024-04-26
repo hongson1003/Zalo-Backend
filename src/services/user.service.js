@@ -1,7 +1,9 @@
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 import db, { sequelize } from '../config/sql/models/index.model';
 import customizeUser from '../ultils/customizeUser';
 import { STATUS_FRIENDSHIP } from '../ultils/types';
+import { includes } from 'lodash';
+import { raw } from 'body-parser';
 const getAllUsers = async () => {
     const attributes = ['id', 'userName', 'phoneNumber', 'avatar'];
     try {
@@ -164,7 +166,7 @@ const sendRequestAddFriendOrRecall = async (user1Id, user2Id, content) => {
                 user2Id,
                 status: STATUS_FRIENDSHIP.PENDING
             });
-            await createNofiticationFriendShip(user1Id, user2Id, content);
+            await createNofiticationFriendShip(friendShip.id, content);
             return {
                 errCode: 0,
                 message: 'Send request success',
@@ -175,7 +177,9 @@ const sendRequestAddFriendOrRecall = async (user1Id, user2Id, content) => {
             friendShipOne.user1Id = user1Id;
             friendShipOne.user2Id = user2Id;
             await friendShipOne.save();
-            await createNofiticationFriendShip(user1Id, user2Id, content);
+
+
+            await createNofiticationFriendShip(friendShipOne.id, content);
             return {
                 errCode: 0,
                 message: 'Send request success',
@@ -185,8 +189,7 @@ const sendRequestAddFriendOrRecall = async (user1Id, user2Id, content) => {
             // xóa notification
             await db.NotificationFriendShip.destroy({
                 where: {
-                    senderId: user1Id,
-                    receiverId: user2Id
+                    friendShipId: friendShipOne.id
                 }
             });
             // đang chuẩn bị thu hồi
@@ -227,22 +230,32 @@ const findFriendShip = async (user1Id, user2Id) => {
                 ]
 
             },
+            attributes: ['id', 'status'],
             include: [
                 {
                     model: db.User,
-                    as: 'user1',
+                    as: 'sender',
                     attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 },
                 {
                     model: db.User,
-                    as: 'user2',
+                    as: 'receiver',
                     attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 }
             ],
             nest: true,
             raw: true
         });
+
+        console.log(friendShip)
         if (friendShip) {
+            const sender = friendShip.sender;
+            const receiver = friendShip.receiver;
+            const standardSender = customizeUser.standardUser(sender);
+            const standardReceiver = customizeUser.standardUser(receiver);
+            friendShip.sender = standardSender;
+            friendShip.receiver = standardReceiver;
+
             return {
                 errCode: 0,
                 message: 'Find success',
@@ -271,6 +284,13 @@ const acceptRequestAddFriend = async (user1Id, user2Id) => {
         if (friendShipDB && friendShipDB.status === STATUS_FRIENDSHIP.PENDING) {
             friendShipDB.status = STATUS_FRIENDSHIP.RESOLVE;
             await friendShipDB.save();
+            // xóa notification
+            await db.NotificationFriendShip.destroy({
+                where: {
+                    friendShipId: friendShipDB.id
+                }
+            });
+
             return {
                 errCode: 0,
                 message: 'Accept success',
@@ -289,14 +309,30 @@ const rejectFriendShip = async (user1Id, user2Id) => {
     try {
         const friendShipDB = await db.FriendShip.findOne({
             where: {
-                user1Id,
-                user2Id
+                [Op.or]: [
+                    {
+                        user1Id,
+                        user2Id
+                    },
+                    {
+                        user1Id: user2Id,
+                        user2Id: user1Id
+                    }
+                ]
             },
             raw: false,
         });
         if (friendShipDB && friendShipDB.status === STATUS_FRIENDSHIP.PENDING) {
             friendShipDB.status = STATUS_FRIENDSHIP.REJECT;
             friendShipDB.save();
+
+            // xóa notification
+            await db.NotificationFriendShip.destroy({
+                where: {
+                    friendShipId: friendShipDB.id
+                }
+            });
+
             return {
                 errCode: 0,
                 message: 'Reject success',
@@ -345,13 +381,12 @@ const unFriend = async (user1Id, user2Id) => {
     }
 }
 
-const createNofiticationFriendShip = async (senderId, receiverId, content) => {
+const createNofiticationFriendShip = async (friendShipId, content) => {
     try {
         const notification = await db.NotificationFriendShip.create({
-            senderId,
-            receiverId,
+            friendShipId,
             content,
-            status: false,
+            status: 0,
         });
         return {
             errCode: 0,
@@ -363,117 +398,56 @@ const createNofiticationFriendShip = async (senderId, receiverId, content) => {
     }
 }
 
-const findAllNotifications = async (userId, readStatus) => {
-    const notifications = await db.NotificationFriendShip.findAll({
-        where: {
-            receiverId: userId,
-        },
-        include: [
-            {
-                model: db.User,
-                as: 'sender',
-                attributes: ['id', 'userName', 'phoneNumber', 'avatar']
-            },
-            {
-                model: db.User,
-                as: 'receiver',
-                attributes: ['id', 'userName', 'phoneNumber', 'avatar']
-            },
-            {
-                model: db.FriendShip,
-                // as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
-                foreignKey: 'senderId',
-                targetKey: 'user1Id',
-                where: {
-                    user1Id: { [Op.col]: 'NotificationFriendShip.senderId' },
-                    user2Id: userId,
-                    status: STATUS_FRIENDSHIP.PENDING
-                }
-            },
-        ],
-        nest: true,
-        raw: true
-    });
-
-    const standardNotifications = notifications.map(notification => {
-        const sender = notification.sender;
-        const receiver = notification.receiver;
-        const standardSender = customizeUser.standardUser(sender);
-        const standardReceiver = customizeUser.standardUser(receiver);
-        notification.sender = standardSender;
-        notification.receiver = standardReceiver;
-        return notification;
-    })
-
-    if (notifications)
-        return {
-            errCode: 0,
-            message: 'Find all notification success',
-            data: notifications
-        }
-    else
-        return {
-            errCode: 1,
-            message: 'Not found',
-            data: []
-        }
-}
-
-const findAllNotificationsNotRead = async (userId) => {
+const findAllNotifications = async (userId) => {
     try {
-        if (!userId) return {
-            errCode: 1,
-            message: 'User not found',
-            data: []
-        };
         const notifications = await db.NotificationFriendShip.findAll({
             where: {
-                receiverId: userId,
-                status: false
+                status: 0
             },
             include: [
                 {
-                    model: db.User,
-                    as: 'sender',
-                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
-                },
-                {
-                    model: db.User,
-                    as: 'receiver',
-                    attributes: ['id', 'userName', 'phoneNumber', 'avatar']
-                },
-                {
                     model: db.FriendShip,
-                    as: 'FriendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
-                    foreignKey: 'senderId',
-                    targetKey: 'user1Id',
+                    as: 'friendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
                     where: {
-                        user1Id: { [Op.col]: 'NotificationFriendShip.senderId' },
-                        user2Id: userId,
-                        status: STATUS_FRIENDSHIP.PENDING
-                    }
+                        user2Id: userId
+                    },
+                    include: [
+                        {
+                            model: db.User,
+                            as: 'sender',
+                            attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
+                        },
+                        {
+                            model: db.User,
+                            as: 'receiver',
+                            attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
+                        }
+                    ],
+                    attributes: ['id', 'status'],
                 },
             ],
             nest: true,
             raw: true
         });
 
-        const standardNotifications = notifications.map(notification => {
-            const sender = notification.sender;
-            const receiver = notification.receiver;
-            const standardSender = customizeUser.standardUser(sender);
-            const standardReceiver = customizeUser.standardUser(receiver);
-            notification.sender = standardSender;
-            notification.receiver = standardReceiver;
-            return notification;
-        });
-
-        if (notifications)
+        if (notifications) {
+            const standardNotifications = notifications.map(notification => {
+                const friendShip = notification.friendShip;
+                const sender = friendShip.sender;
+                const receiver = friendShip.receiver;
+                const standardSender = customizeUser.standardUser(sender);
+                const standardReceiver = customizeUser.standardUser(receiver);
+                friendShip.sender = standardSender;
+                friendShip.receiver = standardReceiver;
+                return notification;
+            });
             return {
                 errCode: 0,
                 message: 'Find all notification success',
                 data: standardNotifications
             }
+        }
+
         else
             return {
                 errCode: 1,
@@ -482,6 +456,64 @@ const findAllNotificationsNotRead = async (userId) => {
             }
     } catch (error) {
         throw error;
+    }
+}
+
+const findAllInvitedFriend = async (userId) => {
+    try {
+        const notifications = await db.NotificationFriendShip.findAll({
+            include: [
+                {
+                    model: db.FriendShip,
+                    as: 'friendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
+                    where: {
+                        user2Id: userId
+                    },
+                    include: [
+                        {
+                            model: db.User,
+                            as: 'sender',
+                            attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
+                        },
+                        {
+                            model: db.User,
+                            as: 'receiver',
+                            attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
+                        }
+                    ],
+                    attributes: ['id', 'status'],
+                },
+            ],
+            nest: true,
+            raw: true
+        });
+
+        if (notifications) {
+            const standardNotifications = notifications.map(notification => {
+                const friendShip = notification.friendShip;
+                const sender = friendShip.sender;
+                const receiver = friendShip.receiver;
+                const standardSender = customizeUser.standardUser(sender);
+                const standardReceiver = customizeUser.standardUser(receiver);
+                friendShip.sender = standardSender;
+                friendShip.receiver = standardReceiver;
+                return notification;
+            });
+            return {
+                errCode: 0,
+                message: 'Find all notification success',
+                data: standardNotifications
+            }
+        }
+
+        else
+            return {
+                errCode: 1,
+                message: 'Not found',
+                data: []
+            }
+    } catch (error) {
+        throw new error;
     }
 }
 
@@ -517,10 +549,9 @@ const updateReadStatusNofificationFriend = async (ids) => {
     }
 }
 
-const findFriendsPagination = async (userId, page, limit) => {
+const findFriendsLimit = async (userId, limit) => {
     try {
         limit *= 1;
-        const offset = (page - 1) * limit;
         const friends = await db.FriendShip.findAll({
             where: {
                 [Op.or]: [
@@ -534,35 +565,34 @@ const findFriendsPagination = async (userId, page, limit) => {
                     }
                 ]
             },
-            attributes: ['user1Id', 'user2Id'],
+            attributes: ['id', 'status'],
             include: [
                 {
                     model: db.User,
-                    as: 'user1',
+                    as: 'sender',
                     attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 },
                 {
                     model: db.User,
-                    as: 'user2',
+                    as: 'receiver',
                     attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
                 }
             ],
             nest: true,
             raw: true,
             order: [
-                // [db.User, 'userName', 'ASC']
+                ['updatedAt', 'DESC']
             ],
-            offset,
             limit
         });
 
         const standardFriends = friends.map(friend => {
-            const user1 = friend.user1;
-            const user2 = friend.user2;
-            const standardUser1 = customizeUser.standardUser(user1);
-            const standardUser2 = customizeUser.standardUser(user2);
-            friend.user1 = standardUser1;
-            friend.user2 = standardUser2;
+            const sender = friend.sender;
+            const receiver = friend.receiver;
+            const standardUser1 = customizeUser.standardUser(sender);
+            const standardUser2 = customizeUser.standardUser(receiver);
+            friend.sender = standardUser1;
+            friend.receiver = standardUser2;
             return friend;
         })
 
@@ -722,9 +752,9 @@ module.exports = {
     unFriend,
     createNofiticationFriendShip,
     findAllNotifications,
-    findAllNotificationsNotRead,
+    findAllInvitedFriend,
     updateReadStatusNofificationFriend,
-    findFriendsPagination,
+    findFriendsLimit,
     getMany,
     updateUserInfor,
     updateAvatar,

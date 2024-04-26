@@ -33,14 +33,14 @@ const IntRoutesUsers = (router) => {
         .put(userMiddleware.checkJWT, userController.unFriend)
 
     router.route('/friends')
-        .get(userMiddleware.checkJWT, userController.findFriendsPagination)
+        .get(userMiddleware.checkJWT, userController.findFriendsLimit)
 
     router.route('/notifications/friendShip')
         .get(userMiddleware.checkJWT, userController.findAllNotifications)
         .post(userMiddleware.checkJWT, userController.updateNotification)
 
-    router.route('/notifications/friendShip/noread')
-        .get(userMiddleware.checkJWT, userController.findAllNotificationsNotRead)
+    router.route('/notifications/friendShip/invited')
+        .get(userMiddleware.checkJWT, userController.findAllInvitedFriend)
 
     router.route('/updateInfor')
         .put(userController.updateUserInfor)

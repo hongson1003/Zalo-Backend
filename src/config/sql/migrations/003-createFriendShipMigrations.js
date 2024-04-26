@@ -4,9 +4,14 @@ const STATUS_FRIENDSHIP = require("../../../ultils/types").STATUS_FRIENDSHIP;
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.createTable('FriendShip', {
-            user1Id: {
+            id: {
                 allowNull: false,
                 primaryKey: true,
+                type: Sequelize.INTEGER,
+                autoIncrement: true
+            },
+            user1Id: {
+                allowNull: false,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'user',
@@ -15,7 +20,6 @@ module.exports = {
             },
             user2Id: {
                 allowNull: false,
-                primaryKey: true,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'user',

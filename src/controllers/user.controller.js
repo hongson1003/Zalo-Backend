@@ -58,6 +58,12 @@ const sendRequestAddFriendOrRecall = async (req, res, next) => {
                 errCode: 1,
                 message: 'Missing required parameter'
             })
+        };
+        if (user.id === userId) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Can not send request to yourself'
+            });
         }
         let response = await userService.sendRequestAddFriendOrRecall(user.id, userId, content);
         return res.status(200).json(response);
@@ -143,7 +149,7 @@ const findAllNotifications = async (req, res, next) => {
     next();
 };
 
-const findAllNotificationsNotRead = async (req, res, next) => {
+const findAllInvitedFriend = async (req, res, next) => {
     const user = req.user;
     if (!user?.id) {
         return res.status(200).json({
@@ -151,7 +157,7 @@ const findAllNotificationsNotRead = async (req, res, next) => {
             message: 'Missing required parameter'
         })
     }
-    let response = await userService.findAllNotificationsNotRead(user.id);
+    let response = await userService.findAllInvitedFriend(user.id);
     if (response)
         return res.status(200).json(response);
     next();
@@ -173,17 +179,17 @@ const updateNotification = async (req, res, next) => {
     }
 };
 
-const findFriendsPagination = async (req, res, next) => {
+const findFriendsLimit = async (req, res, next) => {
     try {
-        const { page, limit } = req.query;
+        const { limit } = req.query;
         const userId = req.user.id;
-        if (!userId || !page || !limit) {
+        if (!userId || !limit) {
             return res.status(200).json({
                 errCode: 1,
                 message: 'Missing required parameter'
             })
         }
-        let response = await userService.findFriendsPagination(userId, page, limit);
+        let response = await userService.findFriendsLimit(userId, limit);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -292,9 +298,9 @@ module.exports = {
     rejectFriendShip,
     unFriend,
     findAllNotifications,
-    findAllNotificationsNotRead,
+    findAllInvitedFriend,
     updateNotification,
-    findFriendsPagination,
+    findFriendsLimit,
     getMany,
     testAPI,
     updateUserInfor,
