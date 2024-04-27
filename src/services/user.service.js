@@ -201,7 +201,7 @@ const sendRequestAddFriendOrRecall = async (user1Id, user2Id, content) => {
                 }
             });
             return {
-                errCode: 0,
+                errCode: 3,
                 message: 'Thu hồi tin nhắn success'
             }
         }

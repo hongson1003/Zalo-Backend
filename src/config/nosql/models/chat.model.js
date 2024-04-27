@@ -36,6 +36,9 @@ const ChatModel = Schema({
         type: Boolean,
         default: true,
     },
+    unViewList: [{
+        type: Number,
+    }],
 }, {
     timestamps: true,
 }

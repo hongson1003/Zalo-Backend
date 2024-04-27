@@ -957,14 +957,11 @@ const deleteChat = async (chatId, userId) => {
                 data: {}
             }
         }
-        if (chat.administrator !== userId) {
-            return {
-                errCode: 1,
-                message: 'This user is not group leader!',
-                data: {}
-            }
+
+        if (chat.unViewList.indexOf(userId) !== -1) {
+            chat.unViewList = chat.unViewList.filter(item => item !== userId);
         }
-        chat.status = false;
+
         const result = await chat.save();
         if (result) {
             return {
