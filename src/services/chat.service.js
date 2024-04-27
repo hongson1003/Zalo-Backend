@@ -27,7 +27,10 @@ const accessChat = async (data) => {
                 data: isChatRes.data
             }
         }
-        const chat = new Chat(data);
+        const chat = new Chat({
+            ...data,
+            seenBy: [data.participants[0]],
+        });
         const result = await chat.save();
         const mapUsers = await CustomizeChat.getMapUserTargetId([result]);
         const [newChats] = CustomizeChat.handleAddUserToParticipants([result], mapUsers);
@@ -98,7 +101,10 @@ const findManyChatPagination = async (userId, page, limit) => {
                     $eq: userId
                 }
             },
-            status: true
+            status: true,
+            unViewList: {
+                $nin: [userId]
+            }
         })
             .limit(limit)
             .populate('background')
@@ -958,9 +964,20 @@ const deleteChat = async (chatId, userId) => {
             }
         }
 
-        if (chat.unViewList.indexOf(userId) !== -1) {
-            chat.unViewList = chat.unViewList.filter(item => item !== userId);
+        if (chat.unViewList.indexOf(userId) === -1) {
+            chat.unViewList.push(userId);
         }
+
+        // destroy all message behind me
+        const messages = await Message.find({ chat: chatId });
+
+        messages.forEach(async message => {
+            if (message.unViewList.indexOf(userId) === -1) {
+                message.unViewList.push(userId);
+                message.save();
+            }
+        });
+
 
         const result = await chat.save();
         if (result) {

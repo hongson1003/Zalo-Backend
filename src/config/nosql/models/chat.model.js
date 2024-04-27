@@ -38,6 +38,7 @@ const ChatModel = Schema({
     },
     unViewList: [{
         type: Number,
+        default: [],
     }],
 }, {
     timestamps: true,

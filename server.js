@@ -65,8 +65,11 @@ io.on('connection', function (socket) {
     socket.in(data).emit('online', data);
   })
 
-  socket.on('new-group-chat', data => {
-    socket.in(data.administrator).emit('new-group-chat', data);
+  socket.on('new-chat', data => {
+    const participants = data.participants.map(participant => participant.id);
+    participants.forEach(participant => {
+      socket.in(participant).emit('new-chat', data);
+    });
   })
 
   socket.on('offline', async data => {
