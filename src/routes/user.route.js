@@ -42,6 +42,9 @@ const IntRoutesUsers = (router) => {
     router.route('/notifications/friendShip/invited')
         .get(userMiddleware.checkJWT, userController.findAllInvitedFriend)
 
+    router.route('/notifications/friendShip/sentInvited')
+        .get(userMiddleware.checkJWT, userController.findAllSentInvitedFriend)
+
     router.route('/updateInfor')
         .put(userController.updateUserInfor)
 
@@ -51,6 +54,8 @@ const IntRoutesUsers = (router) => {
     router.route('/updateOnline')
         .put(userMiddleware.checkJWT,
             userController.updateOnline)
+
+        
 
     return router;
 }

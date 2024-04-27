@@ -179,6 +179,21 @@ const updateNotification = async (req, res, next) => {
     }
 };
 
+const findAllSentInvitedFriend = async (req, res, next) => {
+    const user = req.user;
+    if (!user?.id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing required parameter'
+        })
+    }
+    let response = await userService.findAllSentInvitedFriend(user.id);
+    if (response)
+        return res.status(200).json(response);
+    next();
+
+}
+
 const findFriendsLimit = async (req, res, next) => {
     try {
         const { limit } = req.query;
@@ -305,5 +320,6 @@ module.exports = {
     testAPI,
     updateUserInfor,
     updateAvatar,
-    updateOnline
+    updateOnline,
+    findAllSentInvitedFriend
 }

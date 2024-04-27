@@ -201,7 +201,7 @@ const sendRequestAddFriendOrRecall = async (user1Id, user2Id, content) => {
                 }
             });
             return {
-                errCode: 3,
+                errCode: 0,
                 message: 'Thu hồi tin nhắn success'
             }
         }
@@ -247,7 +247,6 @@ const findFriendShip = async (user1Id, user2Id) => {
             raw: true
         });
 
-        console.log(friendShip)
         if (friendShip) {
             const sender = friendShip.sender;
             const receiver = friendShip.receiver;
@@ -517,6 +516,57 @@ const findAllInvitedFriend = async (userId) => {
     }
 }
 
+const findAllSentInvitedFriend = async (userId) => {
+    try {
+        const notifications = await db.NotificationFriendShip.findAll({
+            include: [
+                {
+                    model: db.FriendShip,
+                    as: 'friendShip', // Đặt tên alias tương tự như đã định nghĩa trong mối quan hệ
+                    where: {
+                        user1Id: userId
+                    },
+                    include: [
+                        {
+                            model: db.User,
+                            as: 'sender',
+                            attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
+                        },
+                        {
+                            model: db.User,
+                            as: 'receiver',
+                            attributes: ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline']
+                        }
+                    ],
+                    attributes: ['id', 'status'],
+                },
+            ],
+            nest: true,
+            raw: true
+        });
+
+        if (notifications) {
+            const standardNotifications = notifications.map(notification => {
+                const friendShip = notification.friendShip;
+                const sender = friendShip.sender;
+                const receiver = friendShip.receiver;
+                const standardSender = customizeUser.standardUser(sender);
+                const standardReceiver = customizeUser.standardUser(receiver);
+                friendShip.sender = standardSender;
+                friendShip.receiver = standardReceiver;
+                return notification;
+            });
+            return {
+                errCode: 0,
+                message: 'Find all notification success',
+                data: standardNotifications
+            }
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateReadStatusNofificationFriend = async (ids) => {
     try {
         const result = await db.NotificationFriendShip.update(
@@ -758,5 +808,6 @@ module.exports = {
     getMany,
     updateUserInfor,
     updateAvatar,
-    updateOnline
+    updateOnline,
+    findAllSentInvitedFriend
 }

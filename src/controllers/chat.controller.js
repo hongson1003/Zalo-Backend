@@ -45,9 +45,8 @@ const findOneByPrivate = async (req, res, next) => {
 const findManyChatPagination = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const page = +req.query.page;
         const limit = +req.query.limit;
-        if (!page || !limit) {
+        if (!limit) {
             return res.status(400).json(
                 {
                     errCode: -1,
@@ -55,7 +54,7 @@ const findManyChatPagination = async (req, res, next) => {
                 }
             );
         }
-        const response = await chatService.findManyChatPagination(userId, page, limit);
+        const response = await chatService.findManyChatPagination(userId, limit);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -352,11 +351,11 @@ const getAccessChat = async (req, res, next) => {
 
 const notifyMessage = async (req, res, next) => {
     try {
-        const { chatId, message } = req.body;
+        const { chatId, message, type } = req.body;
         if (!chatId || !message) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
-        const response = await chatService.notifyMessage(chatId, message);
+        const response = await chatService.notifyMessage(chatId, message, type);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -407,6 +406,20 @@ const deleteGroupChat = async (req, res, next) => {
     }
 }
 
+const seenChat = async (req, res, next) => {
+    try {
+        const chatId = req.body.chatId;
+        const userId = req.user.id;
+        if (!chatId || !userId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.seenChat(chatId, userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 module.exports = {
     accessChat,
@@ -434,5 +447,6 @@ module.exports = {
     notifyMessage,
     outGroupChat,
     grantGroupChat,
-    deleteGroupChat
+    deleteGroupChat,
+    seenChat
 }

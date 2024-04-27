@@ -9,9 +9,20 @@ const InitRoutesChat = (router) => {
         .get(userMiddleware.checkJWT, chatController.findOneByPrivate)
     router.route('/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyChatPagination)
+
+    router.route('/seen')
+        .put(userMiddleware.checkJWT, chatController.seenChat)
+
+
     router.route('/group')
         .post(userMiddleware.checkJWT, chatController.createGroupChat)
         .put(userMiddleware.checkJWT, chatController.updateGroupChat)
+
+    router.route('/delete')
+        .delete(userMiddleware.checkJWT, chatController.deleteGroupChat)
+
+
+
     router.route('/group/out')
         .put(userMiddleware.checkJWT, chatController.outGroupChat)
 
@@ -50,13 +61,12 @@ const InitRoutesChat = (router) => {
     router.route('/getListGroupMember')
         .get(userMiddleware.checkJWT, chatController.getListGroupMember);
 
-    router.post('/notify', chatController.notifyMessage)
+    router.route('/notify')
+        .post(userMiddleware.checkJWT, chatController.notifyMessage)
 
     router.route('/group/grant')
         .put(userMiddleware.checkJWT, chatController.grantGroupChat);
 
-    router.route('/group', userMiddleware.checkJWT)
-        .delete(chatController.deleteGroupChat)
     return router;
 }
 

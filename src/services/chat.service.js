@@ -92,7 +92,6 @@ const findOnePrivateChat = async (user1Id, user2Id) => {
 }
 const findManyChatPagination = async (userId, page, limit) => {
     try {
-        const offset = (page - 1) * limit;
         const chats = await Chat.find({
             participants: {
                 $elemMatch: {
@@ -100,7 +99,7 @@ const findManyChatPagination = async (userId, page, limit) => {
                 }
             },
             status: true
-        }).skip(offset)
+        })
             .limit(limit)
             .populate('background')
             .populate({
@@ -110,7 +109,14 @@ const findManyChatPagination = async (userId, page, limit) => {
             .sort({ updatedAt: -1 });
 
         const mapUsers = await CustomizeChat.getMapUserTargetId(chats);
-        const newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
+        let newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
+        newChats = newChats.map(chat => {
+            if (chat.lastedMessage) {
+                chat.lastedMessage.sender = mapUsers[String(chat.lastedMessage.sender)];
+            }
+            return chat;
+        });
+
         if (chats.length > 0) {
             return {
                 errCode: 0,
@@ -161,6 +167,8 @@ const sendMessage = async (data) => {
         // update lasted messsage for chat
         const chat = await Chat.findById(data.chat);
         chat.lastedMessage = result;
+        chat.seenBy = [];
+        chat.seenBy.push(data.sender);
         await chat.save();
         // const newMessage = await result.populate('chat');
         const mapUsers = await CustomizeChat.getMapUserTargetId([chat]);
@@ -794,7 +802,7 @@ const getAccessChat = async (chatId) => {
 
 }
 
-const notifyMessage = async (chatId, content) => {
+const notifyMessage = async (chatId, content, type) => {
     try {
         const resSender = await getUserByPhone(123);
         if (resSender.errCode !== 0) {
@@ -809,7 +817,7 @@ const notifyMessage = async (chatId, content) => {
             chat: chatId,
             sender: resSender.data.id,
             content: content,
-            type: "NOTIFY"
+            type: type
         }
         const message = new Message(createMessage);
         const result = await message.save();
@@ -981,6 +989,49 @@ const deleteGroupChat = async (chatId, userId) => {
 
 }
 
+const seenChat = async (chatId, userId) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if (chat.participants.indexOf(userId) === -1) {
+            return {
+                errCode: 1,
+                message: 'User not in chat!',
+                data: {}
+            }
+        }
+        if (chat.seenBy.indexOf(userId) !== -1) {
+            return {
+                errCode: 2,
+                message: 'User already seen chat!',
+                data: {}
+            }
+        } else
+            chat.seenBy.push(userId);
+        const result = await chat.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Seen chat successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Seen chat failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -1007,5 +1058,6 @@ module.exports = {
     notifyMessage,
     outGroupChat,
     grantGroupChat,
-    deleteGroupChat
+    deleteGroupChat,
+    seenChat
 }
