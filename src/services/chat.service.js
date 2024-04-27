@@ -163,7 +163,7 @@ const sendMessage = async (data) => {
         // insert into messages
         const message = new Message(data);
         const result = await message.save();
-        const newMessage = await result.populate('reply');
+        let newMessage = await result.populate('reply');
         // update lasted messsage for chat
         const chat = await Chat.findById(data.chat);
         chat.lastedMessage = result;
@@ -172,7 +172,9 @@ const sendMessage = async (data) => {
         await chat.save();
         // const newMessage = await result.populate('chat');
         const mapUsers = await CustomizeChat.getMapUserTargetId([chat]);
+        newMessage = { ...newMessage.toObject() };
         newMessage.sender = mapUsers[String(result.sender)];
+
         if (result.reply) {
             newMessage.reply.sender = mapUsers[String(result.reply.sender)] || { id: result.reply.sender };
         }
