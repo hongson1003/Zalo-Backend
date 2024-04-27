@@ -392,14 +392,14 @@ const grantGroupChat = async (req, res, next) => {
     }
 }
 
-const deleteGroupChat = async (req, res, next) => {
+const deleteChat = async (req, res, next) => {
     try {
         const chatId = req.body.chatId;
         const userId = req.user.id;
         if (!chatId || !userId) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
-        const response = await chatService.deleteGroupChat(chatId, userId);
+        const response = await chatService.deleteChat(chatId, userId);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -447,6 +447,6 @@ module.exports = {
     notifyMessage,
     outGroupChat,
     grantGroupChat,
-    deleteGroupChat,
+    deleteChat,
     seenChat
 }

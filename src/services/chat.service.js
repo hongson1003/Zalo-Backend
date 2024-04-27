@@ -947,20 +947,13 @@ const grantGroupChat = async (chatId, memberId, userId) => {
     }
 }
 
-const deleteGroupChat = async (chatId, userId) => {
+const deleteChat = async (chatId, userId) => {
     try {
         const chat = await Chat.findById(chatId);
         if (!chat) {
             return {
                 errCode: -1,
                 message: 'Chat not found!',
-                data: {}
-            }
-        }
-        if (chat.type !== "GROUP_CHAT") {
-            return {
-                errCode: 0,
-                message: 'Chat is not a group chat!',
                 data: {}
             }
         }
@@ -1060,6 +1053,6 @@ module.exports = {
     notifyMessage,
     outGroupChat,
     grantGroupChat,
-    deleteGroupChat,
+    deleteChat,
     seenChat
 }

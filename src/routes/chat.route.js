@@ -19,7 +19,7 @@ const InitRoutesChat = (router) => {
         .put(userMiddleware.checkJWT, chatController.updateGroupChat)
 
     router.route('/delete')
-        .delete(userMiddleware.checkJWT, chatController.deleteGroupChat)
+        .delete(userMiddleware.checkJWT, chatController.deleteChat)
 
 
 
