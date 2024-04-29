@@ -229,7 +229,7 @@ const getMany = async (req, res, next) => {
 }
 
 const updateUserInfor = async (req, res) => {
-    const { id } = req.body;
+    const id = req.user.id;
     if (!id) {
         return res.status(200).json({
             errCode: 1,
@@ -237,7 +237,10 @@ const updateUserInfor = async (req, res) => {
         })
     }
     try {
-        const result = await userService.updateUserInfor(req.body);
+        const result = await userService.updateUserInfor({
+            ...req.body,
+            id
+        });
         if (!result) {
             return res.status(404).json({
                 errCode: 404,

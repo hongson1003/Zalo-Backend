@@ -6,12 +6,19 @@ const InitRoutesChat = (router) => {
         .post(userMiddleware.checkJWT, chatController.accessChat)
         .get(userMiddleware.checkJWT, chatController.getAccessChat)
     router.route('/private')
-        .get(userMiddleware.checkJWT, chatController.findOneByPrivate)
+        .get(userMiddleware.checkJWT, chatController.findOneByPrivate);
+
+    router.route('/not-read')
+        .get(userMiddleware.checkJWT, chatController.findNotReadChat)
+
     router.route('/pagination')
         .get(userMiddleware.checkJWT, chatController.findManyChatPagination)
 
     router.route('/seen')
         .put(userMiddleware.checkJWT, chatController.seenChat)
+
+    router.route('/pin')
+        .put(userMiddleware.checkJWT, chatController.pinChat)
 
 
     router.route('/group')

@@ -46,11 +46,11 @@ io.on('connection', function (socket) {
   })
 
   socket.on('typing', (room) => {
-    socket.in(room).emit('typing');
+    socket.in(room).emit('typing', room);
   })
 
   socket.on('finish-typing', (room) => {
-    socket.in(room).emit('finish-typing');
+    socket.in(room).emit('finish-typing', room);
   })
 
   socket.on('send-reaction', (data) => {

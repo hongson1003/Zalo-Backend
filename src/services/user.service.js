@@ -691,7 +691,7 @@ const getMany = async (ids) => {
 }
 
 const updateUserInfor = async (newInfor) => {
-    const { id, userName, gender, birthdate } = newInfor;
+    const { id, userName, gender, birthdate, coverImage } = newInfor;
     try {
         const userInfor = await db.ProfileContact.findOne({
             where: {
@@ -716,11 +716,16 @@ const updateUserInfor = async (newInfor) => {
             if (birthdate) {
                 userInfor.birthdate = new Date(birthdate);
             }
+            if (coverImage) {
+                userInfor.coverImage = coverImage;
+            }
             // Save the updated user infor
             const userData = await user.save();
             const profileData = await userInfor.save();
-            const data = userData.dataValues;
+            const data = customizeUser.standardUser(userData.dataValues);
             data.info = profileData.dataValues;
+
+
             return {
                 errCode: 0,
                 message: 'Update user information successfully',

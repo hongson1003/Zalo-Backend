@@ -40,6 +40,12 @@ const ChatModel = Schema({
         type: Number,
         default: [],
     }],
+    listPin: [
+        {
+            type: Number,
+            default: [],
+        }
+    ],
 }, {
     timestamps: true,
 }

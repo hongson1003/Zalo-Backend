@@ -42,6 +42,32 @@ const findOneByPrivate = async (req, res, next) => {
     }
 }
 
+const pinChat = async (req, res, next) => {
+    try {
+        const chatId = req.body.chatId;
+        const userId = req.user.id;
+        if (!chatId) {
+            return res.status(400).json({ errCode: -1, message: 'Missing required input' });
+        }
+        const response = await chatService.pinChat(chatId, userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const findNotReadChat = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const response = await chatService.findNotReadChat(userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+
 const findManyChatPagination = async (req, res, next) => {
     try {
         const userId = req.user.id;
@@ -448,5 +474,7 @@ module.exports = {
     outGroupChat,
     grantGroupChat,
     deleteChat,
-    seenChat
+    seenChat,
+    pinChat,
+    findNotReadChat
 }

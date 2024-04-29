@@ -45,6 +45,85 @@ const accessChat = async (data) => {
     }
 }
 
+const pinChat = async (chatId, userId) => {
+    try {
+        const chat = await Chat.findById(chatId);
+        if (!chat) {
+            return {
+                errCode: -1,
+                message: 'Chat not found!',
+                data: {}
+            }
+        }
+        if (chat.listPin.indexOf(userId) !== -1) {
+            chat.listPin = chat.listPin.filter(item => item !== userId);
+            const result = await chat.save();
+            if (result) {
+                return {
+                    errCode: 3,
+                    message: 'Unpin chat successfully!',
+                    data: result
+                }
+            }
+        }
+        chat.listPin.push(userId);
+        const result = await chat.save();
+        if (result) {
+            return {
+                errCode: 0,
+                message: 'Pin chat successfully!',
+                data: result
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Pin chat failed!',
+            data: {}
+        }
+    } catch (error) {
+        throw error;
+    }
+
+}
+
+const findNotReadChat = async (userId) => {
+    try {
+        const chats = await Chat.find({
+            participants: {
+                $elemMatch: {
+                    $eq: userId
+                }
+            },
+            status: true,
+            seenBy: {
+                $nin: [userId]
+            }
+        })
+            .populate('background')
+            .populate({
+                path: 'lastedMessage', // Tham chiếu trường 'id' lồng nhau
+                model: 'Message' // Tham chiếu Message model để lấy dữ liệu
+            })
+            .sort({ updatedAt: -1 });
+        const mapUsers = await CustomizeChat.getMapUserTargetId(chats);
+        let newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
+        newChats = newChats.map(chat => {
+            if (chat.lastedMessage) {
+                chat.lastedMessage.sender = mapUsers[String(chat.lastedMessage.sender)];
+            }
+            return chat;
+        });
+        return {
+            errCode: 0,
+            message: 'Get chats successfully!',
+            data: newChats
+        }
+    } catch (error) {
+        throw error;
+    }
+
+}
+
 const findOnePrivateChat = async (user1Id, user2Id) => {
     try {
         const chat = await Chat.findOne({
@@ -121,6 +200,16 @@ const findManyChatPagination = async (userId, page, limit) => {
                 chat.lastedMessage.sender = mapUsers[String(chat.lastedMessage.sender)];
             }
             return chat;
+        });
+        // filter pin first position
+        newChats = newChats.sort((a, b) => {
+            if (a.listPin.indexOf(userId) !== -1) {
+                return -1;
+            }
+            if (b.listPin.indexOf(userId) !== -1) {
+                return 1;
+            }
+            return 0;
         });
 
         if (chats.length > 0) {
@@ -1068,5 +1157,7 @@ module.exports = {
     outGroupChat,
     grantGroupChat,
     deleteChat,
-    seenChat
+    seenChat,
+    pinChat,
+    findNotReadChat
 }

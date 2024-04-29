@@ -12,7 +12,7 @@ const IntRoutesUsers = (router) => {
         .get(userMiddleware.checkJWT, userController.findUserById)
 
     router.route('/user-by-phone')
-        .get(userController.findUserByPhone)
+        .get(userMiddleware.checkJWT, userController.findUserByPhone)
 
     router.route('/profile')
         .post(userMiddleware.checkJWT, userController.createInfoContact)
@@ -46,7 +46,7 @@ const IntRoutesUsers = (router) => {
         .get(userMiddleware.checkJWT, userController.findAllSentInvitedFriend)
 
     router.route('/updateInfor')
-        .put(userController.updateUserInfor)
+        .put(userMiddleware.checkJWT, userController.updateUserInfor)
 
     router.route('/avatar')
         .put(userMiddleware.checkJWT,
@@ -55,7 +55,7 @@ const IntRoutesUsers = (router) => {
         .put(userMiddleware.checkJWT,
             userController.updateOnline)
 
-        
+
 
     return router;
 }
