@@ -61,8 +61,17 @@ io.on('connection', function (socket) {
     socket.in(data.chat._id).emit('receive-modify-message', data);
   });
 
-  socket.on('online', data => {
-    socket.in(data).emit('online', data);
+  socket.on('online', async data => {
+    const res = await userService.findFriendsLimit(data, -1);
+    if (res.errCode === 0) {
+      const friendShips = res.data;
+      const friends = friendShips.map(friendShip => {
+        return friendShip.sender.id === data ? friendShip.receiver.id : friendShip.sender.id;
+      });
+      friends.forEach(friend => {
+        socket.in(friend).emit('online', data);
+      });
+    }
   })
 
   socket.on('new-chat', data => {
@@ -74,7 +83,16 @@ io.on('connection', function (socket) {
 
   socket.on('offline', async data => {
     await userService.updateOnline(data, new Date());
-    socket.in(data).emit('offline', data);
+    const res = await userService.findFriendsLimit(data, -1);
+    if (res.errCode === 0) {
+      const friendShips = res.data;
+      const friends = friendShips.map(friendShip => {
+        return friendShip.sender.id === data ? friendShip.receiver.id : friendShip.sender.id;
+      });
+      friends.forEach(friend => {
+        socket.in(friend).emit('offline', data);
+      });
+    }
   })
 
   socket.on('transfer-disband-group', data => {
@@ -108,6 +126,10 @@ io.on('connection', function (socket) {
 
   socket.on('grant', data => {
     socket.in(data._id).emit('grant', data);
+  })
+
+  socket.on('change-background', data => {
+    socket.in(data.chatId).emit('change-background', data);
   })
 
   socket.on("disconnect", (reason) => {

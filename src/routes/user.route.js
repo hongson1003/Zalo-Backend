@@ -55,8 +55,11 @@ const IntRoutesUsers = (router) => {
         .put(userMiddleware.checkJWT,
             userController.updateOnline)
 
+    router.route('/send-verify-email')
+        .post(userMiddleware.checkJWT, userController.sendverifyEmail)
 
-
+    router.route('/verify-email')
+        .post(userMiddleware.checkJWT, userController.verifyEmail)
     return router;
 }
 

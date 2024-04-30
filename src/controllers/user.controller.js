@@ -14,6 +14,7 @@ const findUserById = async (req, res, next) => {
     next();
 }
 
+
 const findUserByPhone = async (req, res, next) => {
     const response = await userService.getUserByPhone(req.query.phoneNumber);
     if (response)
@@ -303,6 +304,40 @@ const updateOnline = async (req, res, next) => {
     }
 }
 
+const sendverifyEmail = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const userId = req.user.id;
+        if (!email) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.sendverifyEmail(email, userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const verifyEmail = async (req, res, next) => {
+    try {
+        const { code, email } = req.body;
+        const userId = req.user.id;
+        if (!code) {
+            return res.status(200).json({
+                errCode: 1,
+                message: 'Missing required parameter'
+            })
+        }
+        let response = await userService.verifyEmail(email, code, userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     findAllUsers,
     findUserById,
@@ -324,5 +359,7 @@ module.exports = {
     updateUserInfor,
     updateAvatar,
     updateOnline,
-    findAllSentInvitedFriend
+    findAllSentInvitedFriend,
+    sendverifyEmail,
+    verifyEmail
 }

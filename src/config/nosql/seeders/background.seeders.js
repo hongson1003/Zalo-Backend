@@ -6,13 +6,13 @@ connectNoSql();
 const sampleBackgrounds = [
     {
         name: 'Tín hiệu từ vũ trụ',
-        headerColor: 'BLACK',
+        headerColor: 'WHITE',
         messageColor: 'BLACK',
         url: 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-19-1.jpg'
     },
     {
         name: 'Tín hiệu từ vũ trụ',
-        headerColor: 'BLACK',
+        headerColor: 'WHITE',
         messageColor: 'BLACK',
         url: 'https://haycafe.vn/wp-content/uploads/2022/01/Hinh-anh-hinh-nen-trai-dat-va-mat-troi.jpg'
     },

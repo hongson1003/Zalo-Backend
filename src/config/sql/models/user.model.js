@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId'
       });
 
+
     }
   }
   User.init({
@@ -52,8 +53,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true,
     },
+    code: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     refresh_token: DataTypes.STRING,
     peerId: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    emailActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   }, {

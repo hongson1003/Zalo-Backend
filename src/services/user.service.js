@@ -2,8 +2,8 @@ import { Op, where } from 'sequelize';
 import db, { sequelize } from '../config/sql/models/index.model';
 import customizeUser from '../ultils/customizeUser';
 import { STATUS_FRIENDSHIP } from '../ultils/types';
-import { includes } from 'lodash';
-import { raw } from 'body-parser';
+import emailService from './email.service';
+
 const getAllUsers = async () => {
     const attributes = ['id', 'userName', 'phoneNumber', 'avatar'];
     try {
@@ -22,7 +22,7 @@ const getAllUsers = async () => {
 }
 
 const getUserById = async (id) => {
-    const attributes = ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline', 'peerId'];
+    const attributes = ['id', 'userName', 'phoneNumber', 'avatar', 'lastedOnline', 'peerId', 'email'];
     try {
         const user = await db.User.findOne({
             where: {
@@ -633,7 +633,7 @@ const findFriendsLimit = async (userId, limit) => {
             order: [
                 ['updatedAt', 'DESC']
             ],
-            limit
+            limit: (limit === -1 ? null : limit)
         });
 
         const standardFriends = friends.map(friend => {
@@ -793,6 +793,64 @@ const updateOnline = async (userId, time) => {
         throw error;
     }
 }
+
+const sendverifyEmail = async (email, userId) => {
+    try {
+        const user = await db.User.findOne({
+            where: {
+                id: userId
+            },
+            raw: false
+        });
+        const otp = Math.floor(Math.random() * 1000000);
+
+        const resEmail = await emailService.sendMailVerify(email, otp);
+        if (resEmail) {
+            user.code = otp;
+            await user.save();
+            return {
+                errCode: 0,
+                message: 'Send verify email success',
+            }
+        }
+        return {
+            errCode: 1,
+            message: 'Send verify email failed',
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const verifyEmail = async (email, code, userId) => {
+    try {
+        const user = await db.User.findOne({
+            where: {
+                id: userId
+            },
+            raw: false
+        });
+        if (user.code === code) {
+            user.email = email;
+            user.code = null;
+            user.emailActive = true;
+            await user.save();
+            return {
+                errCode: 0,
+                message: 'Verify email success',
+            }
+        }
+        return {
+            errCode: 1,
+            message: 'Verify email failed',
+        }
+    } catch (error) {
+        throw error;
+    }
+
+}
+
+
 module.exports = {
     getAllUsers,
     getUserById,
@@ -814,5 +872,7 @@ module.exports = {
     updateUserInfor,
     updateAvatar,
     updateOnline,
-    findAllSentInvitedFriend
+    findAllSentInvitedFriend,
+    sendverifyEmail,
+    verifyEmail
 }

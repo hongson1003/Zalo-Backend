@@ -48,6 +48,14 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      emailActive: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       createdAt: {
         type: Sequelize.DATE,
       },
