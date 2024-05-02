@@ -1135,11 +1135,10 @@ const findManyImagePagination = async (chatId, limit) => {
         const total = await Message.find({ 
             chat: chatId,
             type: MESSAGES.IMAGES
-        });
+        }).limit(limit);
         if (limit > total) {
             limit = total;
         }
-        //.skip(offset).limit(limit);
         if (total.length > 0) {
             return {
                 errCode: 0,
@@ -1150,6 +1149,31 @@ const findManyImagePagination = async (chatId, limit) => {
         return {
             errCode: -1,
             message: 'Images not found!',
+            data: []
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+const findManyFilePagination = async (chatId, limit) => {
+    try {
+        const total = await Message.find({ 
+            chat: chatId,
+            type: MESSAGES.FILE_FOLDER
+        }).limit(limit);
+        if (limit > total) {
+            limit = total;
+        }
+        if (total.length > 0) {
+            return {
+                errCode: 0,
+                message: 'Get files successfully!',
+                data: total
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Files not found!',
             data: []
         }
     } catch (error) {
@@ -1186,5 +1210,6 @@ module.exports = {
     seenChat,
     pinChat,
     findNotReadChat,
-    findManyImagePagination
+    findManyImagePagination,
+    findManyFilePagination
 }

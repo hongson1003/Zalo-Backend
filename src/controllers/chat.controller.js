@@ -448,8 +448,8 @@ const seenChat = async (req, res, next) => {
 // Xem tất cả ảnh
 const findManyImagePagination = async (req, res, next) => {
     try {
-        const chatId = req.body.chatId;
-        const limit = req.body.limit;
+        const chatId = req.query.chatId;
+        const limit = req.query.limit;
         if (!chatId || !limit) {
             return res.status(400).json(
                 {
@@ -464,7 +464,24 @@ const findManyImagePagination = async (req, res, next) => {
         next(error);
     }
 }
-
+const findManyFilePagination = async (req, res, next) => {
+    try {
+        const chatId = req.query.chatId;
+        const limit = req.query.limit;
+        if (!chatId || !limit) {
+            return res.status(400).json(
+                {
+                    errCode: -1,
+                    message: 'Missing required input'
+                }
+            );
+        }
+        const response = await chatService.findManyFilePagination(chatId, limit);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports = {
     accessChat,
     findOneByPrivate,
@@ -495,5 +512,6 @@ module.exports = {
     seenChat,
     pinChat,
     findNotReadChat,
-    findManyImagePagination
+    findManyImagePagination,
+    findManyFilePagination
 }
