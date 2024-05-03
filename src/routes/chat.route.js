@@ -61,7 +61,10 @@ const InitRoutesChat = (router) => {
         .put(userMiddleware.checkJWT, chatController.addMembers);
     router.route('/message/deleteMemer')
         .put(userMiddleware.checkJWT, chatController.deleteMember);
-
+    router.route('/message/getAllPicture')
+        .get(userMiddleware.checkJWT, chatController.findManyImagePagination);
+    router.route('/message/getAllFile')
+        .get(userMiddleware.checkJWT, chatController.findManyFilePagination);
     // disband by leader
     router.route('/grantGroupLeader')
         .put(userMiddleware.checkJWT, chatController.disbandByLeader);

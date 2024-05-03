@@ -1,6 +1,6 @@
 import Chat from "../config/nosql/models/chat.model";
 import Message from "../config/nosql/models/message.model";
-import { STATUS_CHAT } from '../ultils/types';
+import { MESSAGES, STATUS_CHAT } from '../ultils/types';
 import CustomizeChat from '../ultils/customizeChat';
 import Background from "../config/nosql/models/background.model";
 import { getUserById, getUserByPhone } from '../services/user.service.js'
@@ -1129,7 +1129,57 @@ const seenChat = async (chatId, userId) => {
         throw error;
     }
 }
-
+// Get all pics
+const findManyImagePagination = async (chatId, limit) => {
+    try {
+        const total = await Message.find({ 
+            chat: chatId,
+            type: MESSAGES.IMAGES
+        }).limit(limit);
+        if (limit > total) {
+            limit = total;
+        }
+        if (total.length > 0) {
+            return {
+                errCode: 0,
+                message: 'Get images successfully!',
+                data: total
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Images not found!',
+            data: []
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+const findManyFilePagination = async (chatId, limit) => {
+    try {
+        const total = await Message.find({ 
+            chat: chatId,
+            type: MESSAGES.FILE_FOLDER
+        }).limit(limit);
+        if (limit > total) {
+            limit = total;
+        }
+        if (total.length > 0) {
+            return {
+                errCode: 0,
+                message: 'Get files successfully!',
+                data: total
+            }
+        }
+        return {
+            errCode: -1,
+            message: 'Files not found!',
+            data: []
+        }
+    } catch (error) {
+        throw error;
+    }
+}
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -1159,5 +1209,7 @@ module.exports = {
     deleteChat,
     seenChat,
     pinChat,
-    findNotReadChat
+    findNotReadChat,
+    findManyImagePagination,
+    findManyFilePagination
 }
