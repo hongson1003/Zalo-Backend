@@ -1130,12 +1130,18 @@ const seenChat = async (chatId, userId) => {
     }
 }
 // Get all pics
-const findManyImagePagination = async (chatId, limit) => {
+const findManyImagePagination = async (chatId, limit, userId) => {
     try {
-        const total = await Message.find({ 
+        const total = await Message.find({
             chat: chatId,
-            type: MESSAGES.IMAGES
-        }).limit(limit);
+            type: MESSAGES.IMAGES,
+            isDelete: false,
+            unViewList: {
+                $nin: [userId]
+            }
+        })
+            .limit(limit)
+            .sort({ updatedAt: -1 });
         if (limit > total) {
             limit = total;
         }
@@ -1157,7 +1163,7 @@ const findManyImagePagination = async (chatId, limit) => {
 }
 const findManyFilePagination = async (chatId, limit) => {
     try {
-        const total = await Message.find({ 
+        const total = await Message.find({
             chat: chatId,
             type: MESSAGES.FILE_FOLDER
         }).limit(limit);

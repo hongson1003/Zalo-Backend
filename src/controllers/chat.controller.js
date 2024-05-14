@@ -450,6 +450,7 @@ const findManyImagePagination = async (req, res, next) => {
     try {
         const chatId = req.query.chatId;
         const limit = req.query.limit;
+        const userId = req.user.id;
         if (!chatId || !limit) {
             return res.status(400).json(
                 {
@@ -458,7 +459,7 @@ const findManyImagePagination = async (req, res, next) => {
                 }
             );
         }
-        const response = await chatService.findManyImagePagination(chatId, limit);
+        const response = await chatService.findManyImagePagination(chatId, limit, userId);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
