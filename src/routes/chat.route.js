@@ -20,6 +20,9 @@ const InitRoutesChat = (router) => {
     router.route('/pin')
         .put(userMiddleware.checkJWT, chatController.pinChat)
 
+    router.route('/total-together')
+        .get(userMiddleware.checkJWT, chatController.getTotalTogether)
+
 
     router.route('/group')
         .post(userMiddleware.checkJWT, chatController.createGroupChat)
@@ -27,8 +30,6 @@ const InitRoutesChat = (router) => {
 
     router.route('/delete')
         .delete(userMiddleware.checkJWT, chatController.deleteChat)
-
-
 
     router.route('/group/out')
         .put(userMiddleware.checkJWT, chatController.outGroupChat)

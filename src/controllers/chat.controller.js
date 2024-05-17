@@ -381,7 +381,8 @@ const notifyMessage = async (req, res, next) => {
         if (!chatId || !message) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
-        const response = await chatService.notifyMessage(chatId, message, type);
+        const user = req.user;
+        const response = await chatService.notifyMessage(chatId, message, type, user);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -483,6 +484,26 @@ const findManyFilePagination = async (req, res, next) => {
         next(error);
     }
 }
+
+const getTotalTogether = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const friendId = req.query.friendId;
+        if (!friendId) {
+            return res.status(400).json(
+                {
+                    errCode: -1,
+                    message: 'Missing required input'
+                }
+            );
+        }
+        const response = await chatService.getTotalTogether(user.id, friendId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     accessChat,
     findOneByPrivate,
@@ -514,5 +535,6 @@ module.exports = {
     pinChat,
     findNotReadChat,
     findManyImagePagination,
-    findManyFilePagination
+    findManyFilePagination,
+    getTotalTogether
 }

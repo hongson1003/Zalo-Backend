@@ -621,7 +621,9 @@ const unPinMessage = async (messageId) => {
 
 const addMembers = async (chatId, members, id) => {
     try {
-        const chat = await Chat.findById(chatId);
+        const chat = await Chat.findById(chatId)
+            .populate('background')
+            .populate('lastedMessage');
         if (!chat) {
             return {
                 errCode: -1,
@@ -663,7 +665,9 @@ const addMembers = async (chatId, members, id) => {
 
 const deleteMember = async (memberId, chatId, id) => {
     try {
-        const chat = await Chat.findById(chatId);
+        const chat = await Chat.findById(chatId)
+            .populate('background')
+            .populate('lastedMessage');
         if (!chat) {
             return {
                 errCode: -1,
@@ -899,20 +903,12 @@ const getAccessChat = async (chatId) => {
 
 }
 
-const notifyMessage = async (chatId, content, type) => {
+const notifyMessage = async (chatId, content, type, user) => {
     try {
-        const resSender = await getUserByPhone(123);
-        if (resSender.errCode !== 0) {
-            return {
-                errCode: -1,
-                message: 'Sender not found!',
-                data: {}
-            }
-        }
         const createMessage = {
             _id: objectId(),
             chat: chatId,
-            sender: resSender.data.id,
+            sender: user.id,
             content: content,
             type: type
         }
@@ -1186,6 +1182,40 @@ const findManyFilePagination = async (chatId, limit) => {
         throw error;
     }
 }
+
+const getTotalTogether = async (userId, friendId) => {
+    try {
+        const totalChats = await Chat.find({
+            participants: {
+                $all: [userId, friendId]
+            },
+            type: STATUS_CHAT.GROUP_CHAT
+        })
+            .populate('background')
+            .populate({
+                path: 'lastedMessage', // Tham chiếu trường 'id' lồng nhau
+                model: 'Message' // Tham chiếu Message model để lấy dữ liệu
+            });
+        const mapUsers = await CustomizeChat.getMapUserTargetId(totalChats);
+        let newChats = CustomizeChat.handleAddUserToParticipants(totalChats, mapUsers);
+        newChats = newChats.map(chat => {
+            if (chat.lastedMessage) {
+                chat.lastedMessage.sender = mapUsers[String(chat.lastedMessage.sender)];
+            }
+            return chat;
+        });
+
+
+        return {
+            errCode: 0,
+            message: 'Get total together successfully!',
+            data: newChats
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     accessChat,
     findOnePrivateChat,
@@ -1217,5 +1247,6 @@ module.exports = {
     pinChat,
     findNotReadChat,
     findManyImagePagination,
-    findManyFilePagination
+    findManyFilePagination,
+    getTotalTogether
 }

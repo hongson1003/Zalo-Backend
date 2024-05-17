@@ -2,6 +2,7 @@ import colors from 'colors';
 import app from './app';
 require('dotenv').config();
 import userService from './src/services/user.service';
+import { max } from 'lodash';
 app.set('port', process.env.PORT || 7777);
 
 const server = app.listen(app.get('port'), () => {
@@ -15,6 +16,7 @@ const io = require("socket.io")(server, {
   cors: {
     origin: ['http://localhost:8096', 'http://localhost:5500'],
   },
+  maxHttpBufferSize: 1e8,
 });
 
 io.on('connection', function (socket) {
@@ -132,7 +134,12 @@ io.on('connection', function (socket) {
     socket.in(data.chatId).emit('change-background', data);
   })
 
+  socket.on('delete-member', data => {
+    socket.in(data._id).emit('delete-member', data);
+  });
+
   socket.on("disconnect", (reason) => {
+    console.log('disconnect', reason)
     // else the socket will automatically try to reconnect
   });
 
