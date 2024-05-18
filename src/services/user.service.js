@@ -785,10 +785,14 @@ const updateOnline = async (userId, time) => {
         if (user) {
             user.lastedOnline = time;
             await user.save();
+
+            const standardUser = customizeUser.standardUser(user.get({ plain: true }));
+
+
             return {
                 errCode: 0,
                 message: 'Update online success',
-                data: user
+                data: standardUser
             }
         }
         return {

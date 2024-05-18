@@ -97,6 +97,9 @@ const findNotReadChat = async (userId) => {
             status: true,
             seenBy: {
                 $nin: [userId]
+            },
+            unViewList: {
+                $nin: [userId]
             }
         })
             .populate('background')
@@ -1189,7 +1192,11 @@ const getTotalTogether = async (userId, friendId) => {
             participants: {
                 $all: [userId, friendId]
             },
-            type: STATUS_CHAT.GROUP_CHAT
+            type: STATUS_CHAT.GROUP_CHAT,
+            status: true,
+            unViewList: {
+                $nin: [userId]
+            }
         })
             .populate('background')
             .populate({
