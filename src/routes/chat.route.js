@@ -27,6 +27,7 @@ const InitRoutesChat = (router) => {
     router.route('/group')
         .post(userMiddleware.checkJWT, chatController.createGroupChat)
         .put(userMiddleware.checkJWT, chatController.updateGroupChat)
+        .get(userMiddleware.checkJWT, chatController.findManyGroups)
 
     router.route('/delete')
         .delete(userMiddleware.checkJWT, chatController.deleteChat)

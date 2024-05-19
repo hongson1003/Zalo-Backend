@@ -138,6 +138,10 @@ io.on('connection', function (socket) {
     socket.in(data._id).emit('delete-member', data);
   });
 
+  socket.on('pin-message', room => {
+    socket.in(room).emit('pin-message', room);
+  })
+
   socket.on("disconnect", (reason) => {
     console.log('disconnect', reason)
     // else the socket will automatically try to reconnect

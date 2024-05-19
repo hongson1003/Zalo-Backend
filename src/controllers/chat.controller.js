@@ -8,7 +8,8 @@ const accessChat = async (req, res, next) => {
         if (!data || Object.keys(data).length == 0) {
             return res.status(400).json({ errCode: -1, message: 'Missing required input' });
         }
-        const response = await chatService.accessChat(data);
+        const user = req.user;
+        const response = await chatService.accessChat(data, user);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -60,6 +61,17 @@ const findNotReadChat = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const response = await chatService.findNotReadChat(userId);
+        return res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+const findManyGroups = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const response = await chatService.findManyGroups(userId);
         return res.status(200).json(response);
     } catch (error) {
         next(error);
@@ -415,7 +427,7 @@ const grantGroupChat = async (req, res, next) => {
         const response = await chatService.grantGroupChat(chatId, memberId, userId);
         return res.status(200).json(response);
     } catch (error) {
-        throw error;
+        next(error);
     }
 }
 
@@ -536,5 +548,6 @@ module.exports = {
     findNotReadChat,
     findManyImagePagination,
     findManyFilePagination,
-    getTotalTogether
+    getTotalTogether,
+    findManyGroups
 }

@@ -176,7 +176,7 @@ const updateNotification = async (req, res, next) => {
         let response = await userService.updateReadStatusNofificationFriend(ids);
         return res.status(200).json(response);
     } catch (error) {
-        throw error;
+        next(error);
     }
 };
 

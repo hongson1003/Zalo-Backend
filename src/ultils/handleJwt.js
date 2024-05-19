@@ -1,10 +1,14 @@
 import jwt from 'jsonwebtoken';
 
 const signJwt = (data, secret, expiresIn) => {
-    let token = jwt.sign({
-        data: data
-    }, secret, { expiresIn: expiresIn });
-    return token;
+    try {
+        let token = jwt.sign({
+            data: data
+        }, secret, { expiresIn: expiresIn });
+        return token;
+    } catch (error) {
+        throw error;
+    }
 }
 
 const verify = (token, secret) => {
@@ -23,12 +27,16 @@ const verify = (token, secret) => {
 }
 
 const extractToken = (req) => {
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-        return req.headers.authorization.split(' ')[1];
-    } else if (req.query && req.query.token) {
-        return req.query.token;
+    try {
+        if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+            return req.headers.authorization.split(' ')[1];
+        } else if (req.query && req.query.token) {
+            return req.query.token;
+        }
+        return null;
+    } catch (error) {
+        throw error;
     }
-    return null;
 }
 
 module.exports = {

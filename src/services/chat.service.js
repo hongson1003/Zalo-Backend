@@ -17,7 +17,7 @@ function hex(value) {
 }
 
 
-const accessChat = async (data) => {
+const accessChat = async (data, user) => {
     try {
         const isChatRes = await findOnePrivateChat(data.participants[0], data.participants[1]);
         if (isChatRes.errCode === 0) {
@@ -26,6 +26,9 @@ const accessChat = async (data) => {
                 message: 'Chat already exists!',
                 data: isChatRes.data
             }
+        }
+        if (data?.unViewList?.indexOf(user.id) !== -1) {
+            data.unViewList = data?.unViewList?.filter(item => item !== user.id);
         }
         const chat = new Chat({
             ...data,
@@ -175,6 +178,7 @@ const findOnePrivateChat = async (user1Id, user2Id) => {
         throw error;
     }
 }
+
 const findManyChatPagination = async (userId, page, limit) => {
     try {
         const chats = await Chat.find({
@@ -227,6 +231,49 @@ const findManyChatPagination = async (userId, page, limit) => {
             message: 'Chats not found!',
             data: []
         }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findManyGroups = async (userId) => {
+    try {
+        const chats = await Chat.find({
+            participants: {
+                $elemMatch: {
+                    $eq: userId
+                }
+            },
+            type: STATUS_CHAT.GROUP_CHAT,
+            status: true
+        })
+            .populate('background')
+            .populate({
+                path: 'lastedMessage', // Tham chiếu trường 'id' lồng nhau
+                model: 'Message' // Tham chiếu Message model để lấy dữ liệu
+            })
+            .sort({ updatedAt: -1 });
+        const mapUsers = await CustomizeChat.getMapUserTargetId(chats);
+        let newChats = CustomizeChat.handleAddUserToParticipants(chats, mapUsers);
+        newChats = newChats.map(chat => {
+            if (chat.lastedMessage) {
+                chat.lastedMessage.sender = mapUsers[String(chat.lastedMessage.sender)];
+            }
+            return chat;
+        });
+        if (chats.length > 0) {
+            return {
+                errCode: 0,
+                message: 'Get groups successfully!',
+                data: newChats
+            }
+        }
+        return {
+            errCode: 1,
+            message: 'Groups not found!',
+            data: []
+        }
+
     } catch (error) {
         throw error;
     }
@@ -573,7 +620,7 @@ const pinMessage = async (messageId, chatId) => {
         if (result) {
             return {
                 errCode: 0,
-                message: 'Recall message successfully!',
+                message: 'Pin message successfully!',
                 data: newMessage
             }
         }
@@ -604,17 +651,16 @@ const unPinMessage = async (messageId) => {
         const mapUsers = await CustomizeChat.getMapUserTargetId([newMessage.chat]);
         newMessage.sender = mapUsers[String(newMessage.sender)];
 
-
         if (result) {
             return {
                 errCode: 0,
-                message: 'Recall message successfully!',
+                message: 'Unpin message successfully!',
                 data: newMessage
             }
         }
         return {
             errCode: -1,
-            message: 'Recall message message failed!',
+            message: 'Unpin message message failed!',
             data: {}
         }
     } catch (error) {
@@ -642,6 +688,13 @@ const addMembers = async (chatId, members, id) => {
             }
         }
         const participants = [...chat.participants];
+        if (participants.indexOf(id) === -1) {
+            return {
+                errCode: 1,
+                message: 'This user is not in group chat!',
+                data: {}
+            }
+        }
 
         const mergedParticipants = _.union(participants, members);
         chat.participants = mergedParticipants;
@@ -885,8 +938,16 @@ const replyMessage = async (messsageCurrentId, messagePrevId) => {
 const getAccessChat = async (chatId) => {
     try {
         const chat = await Chat.findById(chatId).populate('background').populate('lastedMessage');
+        if (!chat) {
+            return {
+                errCode: 1,
+                message: 'Chat not found!',
+            }
+        }
         const mapUsers = await CustomizeChat.getMapUserTargetId([chat]);
         const [newChats] = CustomizeChat.handleAddUserToParticipants([chat], mapUsers);
+        const adminstrator = mapUsers[String(chat.administrator)];
+        newChats.adminstrator = adminstrator;
 
         if (!chat) {
             return {
@@ -1255,5 +1316,6 @@ module.exports = {
     findNotReadChat,
     findManyImagePagination,
     findManyFilePagination,
-    getTotalTogether
+    getTotalTogether,
+    findManyGroups
 }
