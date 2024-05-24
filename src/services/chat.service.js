@@ -702,10 +702,12 @@ const addMembers = async (chatId, members, id) => {
       };
     }
     const participants = [...chat.participants];
-    if (participants.indexOf(id) !== -1) {
+
+    const meIndex = members.indexOf(id);
+    if (meIndex !== -1) {
       return {
         errCode: 1,
-        message: "This user is already in group!",
+        message: "You are already in this group!",
         data: chat,
       };
     }
